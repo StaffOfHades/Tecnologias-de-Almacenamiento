@@ -6,7 +6,7 @@
 
 import java.io.*;
 
-public class Archivo {
+public class CREAR{
     
 	private RandomAccessFile raf = null;
     
