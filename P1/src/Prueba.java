@@ -26,13 +26,13 @@ public class Prueba {
 			Registro registro;
             
 			registro = new Registro( "Sucursal 3", 3, "Cliente 3", 300.0 );
-			archivo.insertar( registro );
+			archivo.insertarF( registro );
 			registro = new Registro( "Sucursal 2", 2, "Cliente 2", 200.0 );
-			archivo.insertar( registro );
+			archivo.insertarF( registro );
 			registro = new Registro( "Sucursal 1", 1, "Cliente 1", 100.0 );
-			archivo.insertar( registro );
+			archivo.insertarF( registro );
 			registro = new Registro( "Sucursal 0", 0, "Cliente 0", 0.0 );
-			archivo.insertar( registro );
+			archivo.insertarF( registro );
             
 			raf.close();
             

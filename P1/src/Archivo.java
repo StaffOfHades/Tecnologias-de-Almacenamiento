@@ -23,11 +23,20 @@ public class Archivo {
     / inserta un registro al inicio del archivo
     /-----------------------------------------------------------------*/
     
-	public void insertar( Registro registro ) throws IOException {
+	public void insertarI( Registro registro ) throws IOException {
         
 		insertarEn( 0, registro );
 	}
+   
+    /*-----------------------------------------------------------------
+    / inserta un registro al final del archivo
+    /-----------------------------------------------------------------*/
     
+	public void insertarF( Registro registro ) throws IOException {
+        
+		insertarEn( (int) raf.length() / registro.length(), registro );
+	}
+ 
     /*-----------------------------------------------------------------
     / presenta los registros del archivo
     /-----------------------------------------------------------------*/
