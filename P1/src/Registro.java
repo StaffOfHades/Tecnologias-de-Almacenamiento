@@ -13,17 +13,17 @@ public class Registro {
 	private int numero = 0;
 	private byte[] nombre = new byte[20];
 	private double saldo = 0;
-    
+    private byte borrar;   
+ 
     /*-----------------------------------------------------------------
     / constructores
     /-----------------------------------------------------------------*/
     
-	public Registro() {}
+	public Registro() { }
     
 	public Registro( String nomSucursal, int numCuenta,
                      String nomCliente, double deposito )
 	{
-		byte[] chars;
         
 		if( nomSucursal.length() > 20 || nomCliente.length() > 20 ) {
             
@@ -39,6 +39,8 @@ public class Registro {
 			nombre[i] = nomCliente.getBytes()[i];
         
 		saldo = deposito;
+
+        borrar = 0;
 	}
     
     /*-----------------------------------------------------------------
@@ -59,7 +61,18 @@ public class Registro {
 	public double getSaldo() {
         return saldo;
     }
+
+    public boolean paraBorrar() {
+        return borrar == 1;
+    }
     
+    public void setSaldo(double saldo) {
+        this.saldo = saldo;
+    }
+
+    public void setParaBorrar() {
+        borrar = 1;
+    }
     /*-----------------------------------------------------------------
     / longitud en bytes de un registro
     /-----------------------------------------------------------------*/
@@ -68,7 +81,8 @@ public class Registro {
 		return sucursal.length +
                Integer.SIZE / 8 +
                nombre.length +
-               Double.SIZE / 8;
+               Double.SIZE / 8 +
+               1; // Un byte
 	}
     
     /*-----------------------------------------------------------------
@@ -80,6 +94,7 @@ public class Registro {
 		numero = raf.readInt();
 		raf.read( nombre );
 		saldo = raf.readDouble();
+        borrar = raf.readByte();
 	}
     
 	public void write( RandomAccessFile raf ) throws IOException { 
@@ -87,5 +102,6 @@ public class Registro {
 		raf.writeInt( numero );
 		raf.write( nombre );
 		raf.writeDouble( saldo );
-	}	
+	    raf.writeByte( borrar );
+    }	
 }
