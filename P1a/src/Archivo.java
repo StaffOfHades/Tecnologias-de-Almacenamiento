@@ -81,13 +81,14 @@ public class Archivo {
     public Registro consultar(int numero) throws IOException {
         Registro registro = new Registro();
 		int length = (int) (raf.length() / registro.length());
-        
-		raf.seek( 0 );
-                    
+ 
         boolean found = false;        
         int i = 0;    
+        raf.seek( 0 );
 
         while (!found && i < length) {
+            //registro = new Registro();
+            //raf.seek( i * length );
             registro.read( raf );        
             found = registro.getNumero() == numero;
             i++;
@@ -113,10 +114,10 @@ public class Archivo {
 		int length = (int) (raf.length() / registro.length());
         
 		System.out.println( "Numero de registros: " + length );
-		raf.seek( 0 );
-        
+        raf.seek( 0 );
+           
 		for( int i = 0; i < length; i++ ) {
-            
+            //raf.seek( i * length );     
 			registro.read( raf );
             
             if (!registro.paraBorrar())           

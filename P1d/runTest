@@ -1,0 +1,13 @@
+#!/bin/bash
+
+
+if [ ! -z $1 ] && [ "$1" = "-c" ]; then
+     ./buildTest
+    if [ "$?" -eq "0" ]; then
+        java -cp bin Prueba
+    else
+         printf "\n\n    Unable to build a new version\n\n" >&2
+    fi
+else
+    java -cp bin Prueba
+fi
