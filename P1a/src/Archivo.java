@@ -18,23 +18,11 @@ public class Archivo {
 		this.raf = raf;
 	}
     
-    /*-----------------------------------------------------------------
-    / inserta un registro al inicio del archivo
-    /-----------------------------------------------------------------*/
-    
-	public void insertarI( Registro registro ) throws IOException {
+    public int length() throws IOException {
         
-		insertarEn( 0, registro );
-	}
-   
-    /*-----------------------------------------------------------------
-    / inserta un registro al final del archivo
-    /-----------------------------------------------------------------*/
-    
-	public void insertarF( Registro registro ) throws IOException {
-        int n = (int) (raf.length() / registro.length());
+        Registro temp = new Registro();
         
-        Registro temp;
+        int n = (int) (raf.length() / temp.length());
 
         boolean paraBorrar = true;
     
@@ -49,8 +37,26 @@ public class Archivo {
             if (paraBorrar)
                 n--; 
         }
+
+        return n;
+    }
+
+    /*-----------------------------------------------------------------
+    / inserta un registro al inicio del archivo
+    /-----------------------------------------------------------------*/
+    
+	public void insertarI( Registro registro ) throws IOException {
+        
+		insertarEn( 0, registro );
+	}
    
-		insertarEn( n, registro );
+
+    /*-----------------------------------------------------------------
+    / inserta un registro al final del archivo
+    /-----------------------------------------------------------------*/
+    
+	public void insertarF( Registro registro ) throws IOException {
+		insertarEn( length(), registro );
 	}
 
     /*-----------------------------------------------------------------
@@ -80,15 +86,14 @@ public class Archivo {
    
     public Registro consultar(int numero) throws IOException {
         Registro registro = new Registro();
-		int length = (int) (raf.length() / registro.length());
+		int length = length();
  
         boolean found = false;        
         int i = 0;    
-        raf.seek( 0 );
 
         while (!found && i < length) {
-            //registro = new Registro();
-            //raf.seek( i * length );
+            registro = new Registro();
+            raf.seek( i * registro.length() );
             registro.read( raf );        
             found = registro.getNumero() == numero;
             i++;
@@ -97,12 +102,11 @@ public class Archivo {
         if (found) { 
 		    return registro;
         } else {
-            System.out.println( "El numero de cuenta " + numero + " no existe");
+            System.err.println( "El numero de cuenta " + numero + " no existe");
             return null;
         }
 
     }
-
 
     /*-----------------------------------------------------------------
     / presenta los registros del archivo
@@ -111,20 +115,18 @@ public class Archivo {
 	public void imprimirRegistros() throws IOException {
         
 		Registro registro = new Registro();
-		int length = (int) (raf.length() / registro.length());
+		int length = length();
         
 		System.out.println( "Numero de registros: " + length );
-        raf.seek( 0 );
            
 		for( int i = 0; i < length; i++ ) {
-            //raf.seek( i * length );     
+            raf.seek( i * registro.length() );
 			registro.read( raf );
             
-            if (!registro.paraBorrar())           
-			    System.out.println( "( " + registro.getSucursal() + ", "
-                                         + registro.getNumero() + ", "
-                                         + registro.getNombre() + ", "
-                                         + registro.getSaldo() + " )" );
+			System.out.println( "( " + registro.getSucursal() + ", "
+                                     + registro.getNumero() + ", "
+                                     + registro.getNombre() + ", "
+                                     + registro.getSaldo() + " )" );
 		}
 	}
     

@@ -1,5 +1,0 @@
-#!/bin/bash
-rm Depositos.Info 
-
-javac -d bin -sourcepath src src/Prueba.java\
-&& java -cp bin Prueba

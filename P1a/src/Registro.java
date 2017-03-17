@@ -9,11 +9,13 @@ import java.lang.*;
 
 public class Registro {
     
-	private byte[] sucursal = new byte[20];
+    private static final int SIZE = 20;
+
+	private byte[] sucursal = new byte[SIZE];
 	private int numero = 0;
-	private byte[] nombre = new byte[20];
+	private byte[] nombre = new byte[SIZE];
 	private double saldo = 0;
-    private byte borrar;   
+    private byte borrar = 0;
  
     /*-----------------------------------------------------------------
     / constructores
@@ -25,22 +27,20 @@ public class Registro {
                      String nomCliente, double deposito )
 	{
         
-		if( nomSucursal.length() > 20 || nomCliente.length() > 20 ) {
-            
-			System.out.println( "ATENCION: Sucursal o nombre con mas de 20 caracteres" );
+		if( nomSucursal.length() > SIZE || nomCliente.length() > SIZE ) {
+			System.err.println( "ATENCION: Sucursal o nombre con mas de " + SIZE + " caracteres" );
         }
         
-		for( int i = 0; i < 20 && i < nomSucursal.getBytes().length; i++ )
+		for( int i = 0; i < SIZE && i < nomSucursal.getBytes().length; i++ )
 			sucursal[i] = nomSucursal.getBytes()[i];
         
 		numero = numCuenta;
         
-		for( int i = 0; i < 20 && i < nomCliente.getBytes().length; i++ )
+		for( int i = 0; i < SIZE && i < nomCliente.getBytes().length; i++ )
 			nombre[i] = nomCliente.getBytes()[i];
         
 		saldo = deposito;
 
-        borrar = 0;
 	}
     
     /*-----------------------------------------------------------------
