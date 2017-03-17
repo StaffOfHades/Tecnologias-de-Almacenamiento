@@ -21,29 +21,30 @@ public class Archivo {
 	//Metodo para comprobar que el archivo se encuentre ordenado
 	
 	public void comprobarOrden () throws IOException {
-		if (raf.length()!=0) {
-			Registro temp1;
+		if (raf.length() > 0) {
+			Registro temp;
 			boolean ordenado = true;
-			int n=0;
-			int cuenta=0;	
+			int i = 0;
+			int cuenta = 0;	
 			int tempcuenta = -1;
 			
-			temp1= new Registro();
-			int m= (int) (raf.length() / temp1.length());
+			temp = new Registro();
+			int m = (int) ( raf.length() / temp.length() );
 			
-			while (ordenado && n<m) {
-				raf.seek (n*temp1.length());
-				temp1.read (raf);
-				cuenta = temp1.getNumero();
-				if (temp1.paraBorrar() ) {
-					n = m;
-				} else if (cuenta>tempcuenta) {
+			while (ordenado && i < m) {
+				raf.seek( i * temp.length() );
+				temp.read( raf );
+				cuenta = temp.getNumero();
+
+				if ( temp.paraBorrar() ) {
+					i++;
+				} else if (cuenta > tempcuenta) {
 					tempcuenta = cuenta;
 					ordenado = true;
 				} else {
 					ordenado= false;
 				}
-				n++;
+			    i++;
 			}
 			
 			if (!ordenado) {
@@ -62,26 +63,29 @@ public class Archivo {
 	
 	private void archivoOrdenado() throws IOException {
 		
-		Registro uno= new Registro();
-		Registro dos= new Registro();
+		Registro uno = new Registro();
+		Registro dos = new Registro();
 		Registro temp = new Registro();
 		int tamano = length();
-		
-		for (int i=0; i<=tamano; i++) {
+        int c1, c2;	
+
+		for (int i = 0; i <= tamano; i++) {
 			
-			for (int n=0; n<tamano-1; n++) {
-				raf.seek (n*temp.length());
-				uno.read(raf);
-				int c1 = uno.getNumero();
-				raf.seek((n+1)*temp.length());
-				dos.read(raf);
-				int c2 = dos.getNumero();
-				if (c1>c2) {
+			for (int n = 0; n < (tamano - 1); n++) {
+				raf.seek( n * temp.length() );
+				uno.read( raf );
+				c1 = uno.getNumero();
+				
+                raf.seek( (n + 1) * temp.length() );
+				dos.read( raf );				
+                c2 = dos.getNumero();
+
+				if (c1 > c2 || uno.paraBorrar() ) {
 					temp = uno;
-					raf.seek (n*temp.length());
-					dos.write (raf);
-					raf.seek((n+1)*temp.length());
-					temp.write(raf);
+					raf.seek( n * temp.length() );
+					dos.write( raf );
+					raf.seek( (n + 1) * temp.length());
+					temp.write( raf );
 				}
 			}
 		}
@@ -114,28 +118,29 @@ public class Archivo {
     }
 	public Registro consultar (int numCuenta) throws IOException {
 		
-		if (raf.length()!=0) {
+		if (raf.length() != 0) {
 			
 			Registro temp = new Registro ();
 			int tamano = length();
 			int inicio = 0;
-			int fin = tamano-1;
+			int fin = tamano - 1;
 			int medio;
 			
-			while(inicio<=fin) {
-				medio = (int) ((inicio+fin)/2);
-				System.out.println ("medio " + medio);
-				raf.seek (medio*temp.length());
-				temp.read (raf);
+			while(inicio <= fin) {
+				medio = (int) ( (inicio + fin) / 2);
+				//System.out.println("medio " + medio);
+				raf.seek( medio * temp.length() );
+				temp.read( raf );
 				if (temp.getNumero() == numCuenta) {
 					return temp;
-				}else if (temp.getNumero () < numCuenta) {
-					inicio= medio+1;
+				} else if (temp.getNumero () < numCuenta) {
+					inicio = medio + 1;
 				} else {
-					fin = medio-1;
+					fin = medio - 1;
 				}
 			}
-			System.out.println (" El numero de cuenta: " + numCuenta + " no existe");
+			
+            System.err.println (" El numero de cuenta: " + numCuenta + " no existe");
 			return null;
 		}
 		return null;
@@ -148,25 +153,25 @@ public class Archivo {
 		int tamano = (int) (raf.length() / registro.length());
 		//System.out.println("tamano = " + tamano);
 		if (tamano == 0) {
-			insertarEn(0,registro);
+			insertarEn( 0, registro );
 		} else {	
 			int inicio = 0;
 			int fin = tamano;
 			int medio = 0;
-			while (inicio<fin) {
-				medio = (int) ((inicio + fin)/2);
+			while (inicio < fin) {
+				medio = (int) ( (inicio + fin) / 2);
 				//System.out.println("inicio = " + inicio + "; fin = " + fin + "; medio = " + medio);
 				raf.seek( medio * temp.length() );
-				temp.read(raf);
-				int stop = fin-inicio;
+				temp.read( raf );
+				int stop = fin - inicio;
 				//System.out.println("stop = " + stop);
 				if (stop == 1) {
 					if (temp.getNumero() <= registro.getNumero()) {
 						//System.out.println(temp.getNumero() + " <= " + registro.getNumero() + "; insertarEn(" + (medio + 1) + ")");
-						insertarEn(medio + 1, registro);
+						insertarEn( (medio + 1), registro );
 					} else {
 						//System.out.println(temp.getNumero() + " > " + registro.getNumero() + "; insertarEn(" + medio + ")");
-						insertarEn(medio, registro);
+						insertarEn( medio, registro );
 					}						
 					inicio = fin + 1;
 				} else {
@@ -192,12 +197,12 @@ public class Archivo {
 			int inicio = 0;
 			int fin = tamano;
 			int medio = 0;
-			while (inicio<fin) {
-				medio = (int) ((inicio + fin)/2);
+			while (inicio < fin) {
+				medio = (int) ( (inicio + fin) / 2);
 				//System.out.println("inicio = " + inicio + "; fin = " + fin + "; medio = " + medio);
 				raf.seek( medio * temp.length() );
-				temp.read(raf);
-				int stop = fin-inicio;
+				temp.read( raf );
+				int stop = fin - inicio;
 				//System.out.println("stop = " + stop);
 				if (stop == 1) {
 					if (temp.getNumero() <= numCuenta) {
@@ -312,8 +317,7 @@ public class Archivo {
 		
 		System.out.println( "Numero de registros: " + length );
 		System.out.println( "Numero total de registros: " + ((int) (raf.length() / registro.length())) );
-        raf.seek( 0 );
-		
+        raf.seek( 0 );	
            
 		for( int i = 0; i < length ; i++ ) {    
 			registro.read( raf );
