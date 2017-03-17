@@ -9,38 +9,48 @@ import java.lang.*;
 
 public class Registro {
     
-	private byte[] sucursal = new byte[20];
+    private static int tamaño;
+	
+    private byte[] sucursal;
 	private int numero = 0;
-	private byte[] nombre = new byte[20];
+	private byte[] nombre;
 	private double saldo = 0;
-    private byte borrar;   
- 
+    private byte borrar = 0;
+
     /*-----------------------------------------------------------------
     / constructores
     /-----------------------------------------------------------------*/
     
-	public Registro() { }
-    
+	public Registro( int tamaño ) {
+        this.tamaño = tamaño; 
+        
+        sucursal = new byte[this.tamaño];
+        nombre = new byte[this.tamaño];
+    }
+ 
 	public Registro( String nomSucursal, int numCuenta,
                      String nomCliente, double deposito )
 	{
-        
-		if( nomSucursal.length() > 20 || nomCliente.length() > 20 ) {
-            
-			System.out.println( "ATENCION: Sucursal o nombre con mas de 20 caracteres" );
+        sucursal = new byte[this.tamaño];
+        nombre = new byte[this.tamaño];
+         
+		if( nomSucursal.length() > this.tamaño || nomCliente.length() > this.tamaño ) { 
+			System.err.println( "ATENCION: Sucursal o nombre con mas de " + this.tamaño + " caracteres" );
+			System.err.println( "          Aumente el tamaño asignado a la sucursal y nombre." );
+
+            System.exit(1);
         }
         
-		for( int i = 0; i < 20 && i < nomSucursal.getBytes().length; i++ )
+		for( int i = 0; i < this.tamaño && i < nomSucursal.getBytes().length; i++ )
 			sucursal[i] = nomSucursal.getBytes()[i];
         
 		numero = numCuenta;
         
-		for( int i = 0; i < 20 && i < nomCliente.getBytes().length; i++ )
+		for( int i = 0; i < this.tamaño && i < nomCliente.getBytes().length; i++ )
 			nombre[i] = nomCliente.getBytes()[i];
         
 		saldo = deposito;
 
-        borrar = 0;
 	}
     
     /*-----------------------------------------------------------------
@@ -73,6 +83,23 @@ public class Registro {
     public void setParaBorrar() {
         borrar = 1;
     }
+
+    public void changeSize(int tamaño) {
+        final String s = getSucursal();
+        final String n = getNombre();
+
+        this.tamaño = tamaño; 
+        
+        sucursal = new byte[this.tamaño];
+        nombre = new byte[this.tamaño];
+
+        for( int i = 0; i < this.tamaño && i < s.getBytes().length; i++ )
+			sucursal[i] = s.getBytes()[i];
+        
+		for( int i = 0; i < this.tamaño && i < n.getBytes().length; i++ )
+			nombre[i] = n.getBytes()[i];
+
+    }
     /*-----------------------------------------------------------------
     / longitud en bytes de un registro
     /-----------------------------------------------------------------*/
@@ -103,5 +130,6 @@ public class Registro {
 		raf.write( nombre );
 		raf.writeDouble( saldo );
 	    raf.writeByte( borrar );
-    }	
+    }
+
 }

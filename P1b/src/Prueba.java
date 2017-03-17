@@ -7,9 +7,7 @@
 
 import java.io.*;
 
-public class Prueba {
-    
-	private static int longuitudLlave = 20;
+public class Prueba { 
     
     /*-----------------------------------------------------------------
      / Test functions
@@ -21,7 +19,7 @@ public class Prueba {
             
 			File file = new File( "Depositos.Info" );
 			RandomAccessFile raf = new RandomAccessFile( file, "rw" );
-			Archivo archivo = new Archivo( raf );
+			Archivo archivo = new Archivo( raf, 10) ;
             
 			Registro registro;
             
@@ -38,7 +36,7 @@ public class Prueba {
             
 		} catch( IOException e ) {
             
-			System.out.println( "IOException:" );
+			System.err.println( "IOException:" );
 			e.printStackTrace();
 		}
 	}
@@ -50,7 +48,7 @@ public class Prueba {
 			File file = new File( "Depositos.Info" );
 			RandomAccessFile raf = new RandomAccessFile( file, "rw" );
             
-			Archivo archivo = new Archivo( raf );
+			Archivo archivo = new Archivo( raf, 10 );
 			archivo.imprimirRegistros();
             
             archivo.imprimir(1); 
@@ -60,8 +58,10 @@ public class Prueba {
             archivo.borrarEn(0);
             
             archivo.imprimirRegistros();
+         
+            archivo.cambiarTamaño(30);
 
-            Registro registro = new Registro( "Sucursal 0", 0, "Cliente 0", 300.0 );
+            Registro registro = new Registro( "Sucursal 0", 0, "Maria del Rosario Alvarez Figu", 300.0 );
 			archivo.insertarF( registro ); 
             
             archivo.imprimirRegistros();
@@ -70,7 +70,7 @@ public class Prueba {
             
 		} catch( IOException e ) {
             
-			System.out.println( "IOException:" );
+			System.err.println( "IOException:" );
 			e.printStackTrace();
 		}
 	}
@@ -83,5 +83,6 @@ public class Prueba {
         
 		crearArchivo();
 		mostrarArchivo();
+
 	}
 }
