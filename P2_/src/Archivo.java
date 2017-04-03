@@ -5,6 +5,10 @@
 /******************************************************************/
 
 import java.io.*;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.ListIterator;
+
 
 public class Archivo implements Constants  {
      
@@ -54,6 +58,37 @@ public class Archivo implements Constants  {
 			}
 		}
 	}
+
+    public ListIterator<Registro> consultarGrupo(String nomSuc) throws IOException {
+        int posicionIndice = indiceDenso.find(nomSuc);
+		
+		if (posicionIndice != SIN_ASIGNAR) {
+			//Se crea un registro de datos
+
+            final List<Registro> list = new ArrayList<>();
+
+            int i = indiceDenso.getLiga( posicionIndice );
+            int max = indiceDenso.getLiga( posicionIndice + 1 );    
+            
+            Registro registro = new Registro();            
+
+            raf.seek( i * registro.length() );
+
+            while (i++ < max) {
+			    registro = new Registro();
+			    
+                registro.read( raf );
+                
+                if ( registro.borrado() ) continue;
+
+                list.add( registro );
+            }
+
+            return list.listIterator();       
+        }
+
+        return null;
+    }
 
     public Registro consultar (String nomSuc) throws IOException {
         int posicionIndice = indiceDenso.find(nomSuc);
@@ -167,6 +202,31 @@ public class Archivo implements Constants  {
                                      + registro.getSaldo() + " )" );
 		}
 	}
+
+    public void mostrar( String nomSuc ) throws IOException {
+        ListIterator<Registro> it = consultarGrupo( nomSuc );
+        if (it == null) {
+            System.err.println( "No se encontro ningun registro bajo \"" + nomSuc + "\"" );
+            return;
+        }
+        Registro registro = null;
+        indiceDenso.mostrar( nomSuc );
+        int contador = 0;
+        for (; it.hasNext() ; contador++, it.next() );
+        for (; it.hasPrevious(); it.previous() );
+
+		System.out.println( "Numero de registros: " + contador );
+
+        while ( it.hasNext() ) {
+            registro = it.next();
+
+            System.out.println( "( " + registro.getSucursal() + ", "
+                                     + String.format( "%3d", registro.getNumero() ) + ", "
+                                     + registro.getNombre() + ", "
+                                     + registro.getSaldo() + " )" );
+
+        }
+    }
     
     /*-----------------------------------------------------------------
     / cierra el archivo de datos

@@ -27,7 +27,7 @@ public class Prueba {
 			Archivo archivo = new Archivo( archivoRaF, indiceRaF );
 			Registro registro;
             
-            
+            /* 
             registro = new Registro( "Sucursal   3", 3, "Cliente 3", 300.0 );
             archivo.insertar( registro );
             registro = new Registro( "Sucursal   2", 2, "Cliente 2", 200.0 );
@@ -36,29 +36,34 @@ public class Prueba {
             archivo.insertar( registro );
             registro = new Registro( "Sucursal   1", 1, "Cliente 0", 0.0 );
             archivo.insertar( registro );
-            
-            
-            for( int num = 1, i = 1; i <= 8; i++ ) {
-                for( int j = 1; j <= 2; j++ ) {
-                    for( int k = 1; k <= 1; k++, num++ ) {
+            */
+         
+            for( int num = 1, i = 1; i <= 999; i++ ) {
+                for( int j = 1; j <= 9; j++ ) {
+                    //for( int k = 1; k <= 1; k++, num++ ) {
                         
-                        String suc = "Sucursal " + String.format( "%3d", i );
-                        String nom = "Cliente " + j;
+                    String suc = "Sucursal " + String.format( "%3d", i );
+                    String nom = "Cliente " + j;
                         
-                        double salMin = 100.0, salMax = 30000.6;
-                        double sal = Math.random() * (salMax - salMin) + salMin;
+                    double salMin = 100.0, salMax = 30000.6;
+                    double sal = Math.random() * (salMax - salMin) + salMin;
                         
-                        archivo.insertar( new Registro( suc, num, nom, sal ) );
-                    }
+                    archivo.insertar( new Registro( suc, num, nom, sal ) );
+                    
+                    num++;
+                    
+                    //}
                 }
             }
             
+            /*
             for( int i = 0; i < 2; i ++ )
                 archivo.borrar( "Sucursal   8" );
             
             for( int i = 0; i < 2; i ++ )
                 archivo.borrar( "Sucursal   6" );
-           
+           */
+
 			archivo.cerrar();
             
 		} catch( IOException e ) {
@@ -84,6 +89,8 @@ public class Prueba {
             
             // imprime los registros del indice y los del archivo
             archivo.mostrar();
+
+            //archivo.mostrar( "Sucursal   1" );
             archivo.cerrar();
             
 		} catch( IOException e ) {

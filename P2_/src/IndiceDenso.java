@@ -194,6 +194,22 @@ public class IndiceDenso implements Constants {
                                      + String.format( "%3d", registro.getLiga() )+ " )" );
 		}
 	}
+
+    public void mostrar( String nomSuc ) throws IOException {
+        raf.seek( 0 );
+        boolean found = false;
+        while (!found) {
+            registro.read( raf );
+            found = registro.getClave().equals( nomSuc );
+        }
+
+        if (found) {
+           System.out.println( "( " + registro.getClave() + ", "
+                                     + String.format( "%3d", registro.getLiga() )+ " )" );
+        } else {
+            System.err.println( "No se encontro nigun indice bajo\"" + nomSuc + "\"" );
+        }
+    }
     
     /*-----------------------------------------------------------------
     / cierra el archivo ’ndice
