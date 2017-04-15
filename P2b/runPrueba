@@ -1,0 +1,13 @@
+#! /bin/bash
+if  [ ! -z "$1" ]; then if [ "$1" = "-c" ]; then
+    ./buildPrueba
+    if [ "$?" -ne "0" ]; then
+        printf "\n\n    Unable to build a new version\n\n" >&2
+        exit 1
+    fi; fi
+elif [ ! -z "$1" ]; then
+    echo "Unexpected argument recieved ; did you mean -c (compile)?" >&2
+    exit 2
+fi
+rm Archivo.Datos Indice.Disperso 2> /dev/null
+java -cp bin Prueba 
