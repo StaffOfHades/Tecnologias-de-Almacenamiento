@@ -11,13 +11,13 @@ public class Disperso implements Constants {
 	int insertionLim = 10;
 
 	//Intervalos para recreacion de Indice Disperso
-	int intervalX = 10;
 	
     //Limite de inserciones
 	int insertions = 0;
 	
     //Restriccion para reestructuracion
 	private boolean restriction = false;
+    private boolean juntaIguales = true;
 
     public Disperso(RandomAccessFile archivo, RandomAccessFile indice) {
 
@@ -30,11 +30,11 @@ public class Disperso implements Constants {
 		
         int regSize = (int) raf.length() / registry.length();
 		int indSize = (int) indiceDisperso.raf.length() / indiceDisperso.registro.length();
-		if (indSize < 2){
-			
-            restriction = true;
+		if (indSize >= 0) {
 			insertarEn(regSize, registry);
 			restoreIndex();
+		} else {
+            System.out.println("Couldnt add " + registry.toString());
 		}
 	}
 
@@ -53,7 +53,7 @@ public class Disperso implements Constants {
                 raf.seek( k * registry.length() );
 			    registry.read( raf );
 				
-                if (k == 0){
+                if ( k == 0 ) {
 
 					indiceDisperso.insertarEn( 0, registry.getSucursal() );
 					indiceDisperso.updateLiga( 0, k );
@@ -61,10 +61,10 @@ public class Disperso implements Constants {
 					continue;
 				}
 				
-                if ( !registry.getSucursal().equals(prevTemp) ) 
+                if ( !juntaIguales || !registry.getSucursal().equals(prevTemp) )
 					changesControl++;
-				
-                if( changesControl == intervalX ){
+
+                if( changesControl == X_INTERVAL ){
 						
                     changesControl = 0;
 					int indSize = (int) indiceDisperso.raf.length() / indiceDisperso.registro.length();
@@ -81,8 +81,8 @@ public class Disperso implements Constants {
 				if( prevTemp.equals("@") ){
 
 					indiceDisperso.insertarEn( 0, registry.getSucursal() );
-					indiceDisperso.updateLiga(0,k);
-					prevTemp=registry.getSucursal();
+					indiceDisperso.updateLiga( 0, k );
+					prevTemp = registry.getSucursal();
 					continue;
 				}
 					
