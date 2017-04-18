@@ -205,7 +205,7 @@ public class IndiceDenso implements Constants {
 
         if (found) {
            System.out.println( "( " + registro.getClave() + ", "
-                                     + String.format( "%" + NUM_DIGITS + "d", registro.getLiga() )+ " )" );
+                               		+ String.format( "%" + NUM_DIGITS + "d", registro.getLiga() )+ " )" );
         } else {
             System.err.println( "No se encontro nigun indice bajo\"" + nomSuc + "\"" );
         }

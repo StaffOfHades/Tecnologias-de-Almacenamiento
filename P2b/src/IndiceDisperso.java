@@ -1,31 +1,123 @@
-/******************************************************************
-/  clase: IndiceDenso
-/
-/  autor: Dr. Jose Luis Zechinelli Martini
-/******************************************************************/
+import java.io.IOException;
+import java.io.RandomAccessFile;
 
-import java.io.*;
-
-public class IndiceDisperso implements Constants { 
-
-	private RegIndice registro = null;
-	private RandomAccessFile raf = null;
+public class IndiceDisperso implements Constants {
+	
+    public RegIndice registro = null;
+	public RandomAccessFile raf = null;
     
-    /*-----------------------------------------------------------------
-    / constructor
-    /-----------------------------------------------------------------*/
-    
-	public IndiceDisperso( RandomAccessFile indice, int longitud ) {
-        
-		raf = indice;
-		registro = new RegIndice( longitud );
+    public IndiceDisperso (RandomAccessFile index, int length) {
+		raf = index;
+		registro = new RegIndice (length);
 	}
-    
-    /*-----------------------------------------------------------------
-    / consulta del numero total de entradas, de la
-    / posicion de un registro y del contenido de su liga
-    /-----------------------------------------------------------------*/
-    
+ 
+	public void pushPointers(int source, int amount) throws IOException
+	{
+		for(int i = source; i < size(); i++) {
+			raf.seek( i * registro.length() );
+			registro.read( raf );
+			registro.setLiga( registro.getLiga() + amount );
+			raf.seek( i * registro.length() );
+			registro.write( raf );
+		}
+	}
+
+	public int linearSearchDisperso(String searchKey) throws IOException
+	{
+		int length = (int) raf.length() / registro.length();
+		if( length < 1 ) {
+			return 0;
+		}
+		int previousData = 0;
+		int currentData = 0;
+		for( int i = 0; i < length; i++ ) {
+
+			raf.seek( i * registro.length() );
+			registro.read( raf );
+			currentData = registro.getClave().compareTo( searchKey );
+			System.out.println("Current data is " + currentData + " registry " + registro.getClave());
+
+			if(currentData == 0 ||
+                (currentData > 0 && i == 0) || 
+                (currentData > 0 && previousData < 0) ||
+                (currentData < 0 && i == (length - 1) ) )
+            {
+				return i;
+			}
+
+			previousData = currentData;
+		}
+		return SIN_ASIGNAR;
+	}
+
+	public int[] getBoundaries(String target) throws IOException {
+
+		int[] vector = new int[2];
+		int puntero = SIN_ASIGNAR;  //No hay limite derecho
+			
+		puntero = linearSearchDisperso(target);
+		//System.out.println("Pointer A is " + pointerA);
+		raf.seek( puntero * registro.length() );
+		registro.read( raf );
+	
+		if( registro.getClave().equals(target) ) {
+			
+            vector[0] = registro.getLiga();
+			if( keyOnLast( registro.getClave() ) ) {
+				
+                vector[1] = SIN_ASIGNAR;
+			} else {
+				
+                raf.seek( ( (puntero + 1) * registro.length() ) );
+				registro.read( raf );
+				vector[1] = registro.getLiga() - 1;
+			}
+		} else if( registro.getClave().compareTo( target ) < 0 ) {
+			
+			vector[0] = registro.getLiga();
+			
+			if( keyOnLast( registro.getClave() ) ) {
+				
+				vector[1] = SIN_ASIGNAR;
+			} else{
+				
+				raf.seek( (puntero + 1) * registro.length() );
+				registro.read( raf );
+				vector[1] = registro.getLiga() - 1;
+			}
+		} else { //target > 0
+				
+			vector[1] = registro.getLiga();
+				
+			String selectorMemory = registro.getClave();
+			raf.seek( 0 );
+			registro.read( raf );
+				
+			if( registro.getClave().compareTo(selectorMemory) > 0 ) {
+					
+				vector[0] = SIN_ASIGNAR;
+			} else {
+					
+				raf.seek( (puntero - 1) * registro.length() );
+				registro.read(raf);
+				vector[0] = registro.getLiga() + 1;
+			}
+		}	
+		
+		return vector;
+	}
+
+	public boolean keyOnLast(String currentkey) throws IOException {
+		raf.seek( (size() - 1) * registro.length() );
+		registro.read( raf );
+		return registro.getClave().equals( currentkey );
+	}
+
+	public void dumpIndex() throws IOException {
+
+		raf.setLength(0);
+	}
+
     public int size() throws IOException {
         
         return (int) raf.length() / registro.length();
@@ -46,29 +138,20 @@ public class IndiceDisperso implements Constants {
         
 		return registro.getLiga();
 	}
+    
+    public int regIndiceSize() {
 
-    public boolean getTieneEspacio( int posicion ) throws IOException {
-        raf.seek( posicion * registro.length() );
-		registro.read( raf );
-        
-		return registro.tieneEspacio;
+    	return registro.length();
     }
-    
-    public int length() {
-    	
-        return registro.length();
-    }
-    /*-----------------------------------------------------------------
-    / mŽtodos de inserci—n y actualizaci—n
-    /-----------------------------------------------------------------*/
-    
+
 	public int getPosicion( String clave ) throws IOException {
         
 		if( size() == 0 )
 			return insertarEn( 0, clave );
 		else
-			return buscarInsertar( clave, 0, size() - 1 );
+			return buscarInsertar( clave, 0, size()-1 );
 	}
+	
     
 	public void updateLiga( int posicion, int liga ) throws IOException {
         
@@ -81,71 +164,74 @@ public class IndiceDisperso implements Constants {
 		registro.write( raf );
 	}
 
-    //Metodo de busqueda lineal
-    public int busquedaLineal (String claveBusq) throws IOException{
-    	
-        int size = (int) raf.length() / registro.length();
-        boolean found = false;
-        int i = 0;
-        
-        while ( !found && i < size) {
-    		raf.seek( i * registro.length() );
-    		registro.read( raf );
-            
-            found = registro.getClave().equals(claveBusq);
-            if (!found) i++;
-        } 
-        return found ? i : SIN_ASIGNAR;
-    }
-    
-    /*-----------------------------------------------------------------
-    / busca un registro en el ’ndice y regresa su posici—n
-    /-----------------------------------------------------------------*/
-    
 	private int busquedaBinaria( String clave, int izq, int der )
+    
             throws IOException
-    {
-        int mitad;
+	{
 		while( izq <= der ) {
             
-			mitad = izq + ( der - izq ) / 2;
+			int mitad = izq + ( der - izq ) / 2;
             
 			raf.seek( mitad * registro.length() );
 			registro.read( raf );
             
-			if( registro.getClave().compareTo( clave ) < 0 )
+			if( registro.getClave().compareTo( clave) < 0 )
 				izq = mitad + 1;
-			else if( registro.getClave().compareTo( clave ) > 0 )
+			else if( registro.getClave().compareTo( clave) > 0 )
 				der = mitad - 1;
 			else
 				return mitad;
-		}    
-
+		}
+        
 		return SIN_ASIGNAR;
 	}
- 
-    /*-----------------------------------------------------------------
-    / busca un registro y si no lo encuentra lo crea
-    /-----------------------------------------------------------------*/
-    
+
+	public int linearSearch(String searchKey) throws IOException
+	{
+		int length = (int) raf.length() / registro.length();
+		for(int i = 0; i < length; i++)
+		{
+			raf.seek( i * registro.length() );
+			registro.read( raf );
+			
+			if( registro.getClave().equals(searchKey) ) {
+				return i;
+			}
+		}
+		return SIN_ASIGNAR;
+	}
+
+	public void averiguarClave() {
+		try{
+		    raf.seek(0);
+            registro.read( raf );
+        } catch(IOException e) {
+            e.printStackTrace();
+            System.exit(0);
+        }
+		System.out.println( registro.getClave() );
+		System.exit(0);
+	}
+
     private int buscarInsertar( String clave, int izq, int der )
-        throws IOException
+    
+            throws IOException
     {
 		while( izq <= der ) {
             
 			int mitad = izq + ( der - izq ) / 2;
             
 			raf.seek( mitad * registro.length() );
-			registro.read( raf );           
- 
-			if( registro.getClave().compareTo( clave ) > 0 ) {
-             
-				if( izq == der || ( mitad - 1 ) < 0)
+			registro.read( raf );
+            
+			if( registro.getClave().compareTo( clave) > 0 ) {
+                
+				if( izq == der || ( mitad - 1 ) < 0 )
 					return insertarEn( mitad, clave );
 				else
 					der = mitad;
                 
-			} else if( registro.getClave().compareTo( clave ) < 0 ) {
+			} else if( registro.getClave().compareTo( clave) < 0 ) {
                 
 				if( izq == der )
 					return insertarEn( mitad + 1, clave );
@@ -161,74 +247,25 @@ public class IndiceDisperso implements Constants {
 		throw new IOException( "Archivo inconsistente" );
 	}
 
-    /*-----------------------------------------------------------------
-    / desplaza registros para insertar un registro en el indice
-    /-----------------------------------------------------------------*/
-    
-	private int insertarEn( int posicion, String clave ) throws IOException {
+	public int insertarEn( int posicion, String clave ) throws IOException {
         
-        System.out.println("Posicion: " + posicion);
-       
-        if ( size() > 0) {
-            raf.seek( posicion  * registro.length() );
-            registro.read( raf );
-        
-            if ( !registro.tieneEspacio() ) {
-
-		        for( int i = size() - 1; i >= posicion; i-- ) {
+		for( int i = size()-1; i >= posicion; i-- ) {
             
-			        raf.seek( i * registro.length() );
-			        registro.read( raf );
+			raf.seek( i * registro.length() );
+			registro.read( raf );
             
-			        raf.seek( (i + 1) * registro.length() );
-			        registro.write( raf );
-		        }
+			raf.seek( (i + 1) * registro.length() );
+			registro.write( raf );
+		}
         
-		        raf.seek( posicion * registro.length() );
-		        registro.setClave( clave );
-                registro.setLiga( SIN_ASIGNAR ); 
-            }
-
-        } else {
-		    
-            registro.setClave( clave );
-            registro.setLiga( SIN_ASIGNAR ); 
-        }
-
-        registro.agregar();
+		raf.seek( posicion * registro.length() );
+		registro.setClave( clave );
+        registro.setLiga( SIN_ASIGNAR );
 		registro.write( raf );
         
 		return posicion;
 	}
-    /*-----------------------------------------------------------------
-    / borra una entrada del indice compactando el archivo
-    /-----------------------------------------------------------------*/
-	
-	public void borrarEntrada (int posicion) throws Exception {
-		
-		if (posicion >= 0 && posicion <= size() - 1) {
-			
-			for (int i = posicion + 1; i < size(); i++) {
-				
-				//Posicionamiento de la posicion que se va a mantener
-				raf.seek( i * registro.length() );
-				registro.read( raf );
-				
-                //Posicionamiento en la posicion del elemento que se desea borrar
-				raf.seek( (i - 1) * registro.length() );
-				registro.write( raf );
-				
-			}
 
-			raf.setLength( raf.length() - registro.length() );
-		} else {
-			throw new Exception ("Posicion invalida");
-		}	
-	}
-    /*-----------------------------------------------------------------
-    / presenta los registros del ’ndice
-    /-----------------------------------------------------------------*/
-    
 	public void mostrar() throws IOException {
         
 		System.out.println( "Numero de entradas: " + size() );
@@ -242,23 +279,12 @@ public class IndiceDisperso implements Constants {
                                      + String.format( "%" + NUM_DIGITS + "d", registro.getLiga() )+ " )" );
 		}
 	}
-
-    public void mostrar( String nomSuc ) throws IOException {
-        
-        int indice = busquedaBinaria( nomSuc, 0, size() - 1 );
-
-        if (indice != SIN_ASIGNAR ) {
-            System.out.println( "( " + registro.getClave() + ", "
-                                     + String.format( "%" + NUM_DIGITS + "d", registro.getLiga() )+ " )" );
-        } else {
-            System.err.println( "No se encontro nigun indice bajo\"" + nomSuc + "\"" );
-        }
-    }
     
     /*-----------------------------------------------------------------
     / cierra el archivo indice
     /-----------------------------------------------------------------*/
     
-    public void cerrar() throws IOException { raf.close(); }
-
+    public void cerrar() throws IOException { 
+    	raf.close(); 
+    }	
 }
