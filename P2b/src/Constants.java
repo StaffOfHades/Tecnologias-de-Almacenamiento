@@ -9,8 +9,8 @@ public interface Constants {
     int SIN_ASIGNAR = -1;   // registro no encontrado
 
     int X_INTERVAL = 10;
-    int MAX_CLNT = 100;
-    int MAX_SUC = 100;
+    int MAX_CLNT = 10;
+    int MAX_SUC = 1000;
 
     int CLNT_DIGITS = Integer.toString(MAX_CLNT).length();
     int SUC_DIGITS = Integer.toString(MAX_SUC).length();

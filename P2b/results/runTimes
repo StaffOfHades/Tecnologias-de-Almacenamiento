@@ -1,0 +1,24 @@
+#! /bin/bash
+if  [ ! -z "$1" ]; then
+    if [ "$1" = "-c" ]; then
+        ./buildTimes
+        if [ "$?" -ne "0" ]; then
+            printf "\n\n    Unable to build a new version\n\n" >&2
+            exit 1
+        fi
+        if [ ! -z "$2" ] && [ ! -z "$3" ] ; then
+            java -cp bin Times $2 $3
+        else
+            echo "Expecting folder name && suc size" >&2
+            exit 2        
+        fi
+    elif [ ! -z "$2" ]; then
+        java -cp bin Times $1 $2
+    else
+        echo "Expecting folder name && suc size" >&2
+        exit 2
+    fi
+else 
+    echo "Expecting folder name && suc size" >&2
+    exit 2
+fi

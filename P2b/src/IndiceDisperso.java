@@ -142,7 +142,7 @@ public class IndiceDisperso implements Constants {
     / Borrar los indices
     /-----------------------------------------------------------------*/
 
-    public void erase() throws IOException {
+    public void borrar() throws IOException {
 
         raf.setLength(0);
     }

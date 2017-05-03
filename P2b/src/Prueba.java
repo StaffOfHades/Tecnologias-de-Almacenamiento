@@ -7,14 +7,20 @@
 import java.io.*;
 
 public class Prueba implements Constants {
+
+    private static double initTime;
+    private static double currentTime;
+    private static double endTime;
     
     /*-----------------------------------------------------------------
      / mŽtodos de prueba
      /-----------------------------------------------------------------*/
 
     private static void crear() throws IOException {
-        
-        // metadatos del archivo de datos y del archivo ⮤ice
+
+        empezarTemporizador();
+
+        // metadatos del archivo de datos y del archivo indice
         File datos = new File( "ArchivoDisperso.Datos" );
         File denso = new File( "Indice.Disperso" );
             
@@ -24,6 +30,10 @@ public class Prueba implements Constants {
             
         // archivo indexado usando una clave de b쳱ueda de 20 bytes
         Archivo archivo = new Archivo( archivoRaF, indiceRaF );
+
+        // Se borra el archivo para garantizar una prueba limpita
+        archivo.borrar();
+
         Registro registro;
 
         //Sparse index section---------------------------------
@@ -37,10 +47,14 @@ public class Prueba implements Constants {
                         
                 archivo.insertar( new Registro( suc, num++, nom, sal ) );
             }
+            System.out.println( "Se crearon " + MAX_CLNT  + " clientes en la Sucursal "
+                    + String.format( "%" + SUC_DIGITS +  "d", i )) ;
+            vueltaTemporizador();
         }
 
         archivo.cerrar();
-            
+
+        pararTemporizador();
     }
 
 	private static void mostrar() throws IOException {
@@ -78,9 +92,33 @@ public class Prueba implements Constants {
         archivo.busquedaLineal( suc );
 
         archivo.cerrar();
+
+        vueltaTemporizador();
     }
 
-    private static void eliminacio( int sucursalNum ) throws IOException  {
+    private static void busquedaIntervalo( int sucursalNum ) throws IOException {
+        // metadatos del archivo de datos y del archivo indice
+        File datos = new File( "ArchivoDisperso.Datos" );
+        File disperso = new File( "Indice.Disperso" );
+
+        // handlers para manipular el contenido de los archivos
+        RandomAccessFile archivoRaf =  new RandomAccessFile (datos, "rw");
+        RandomAccessFile indiceRaf =  new RandomAccessFile (disperso, "rw");
+
+        // archivo indexado usando una clave de bœsqueda de 20 bytes
+        Archivo archivo = new Archivo( archivoRaf, indiceRaf );
+
+        // Busqueda de un registro por sucursal
+        String suc = "Sucursal " + String.format( "%" + SUC_DIGITS + "d", sucursalNum );
+        archivo.busquedaLinealIntervalo( suc );
+
+        archivo.cerrar();
+    
+        vueltaTemporizador();
+    }
+
+
+    private static void eliminacion( int sucursalNum ) throws IOException  {
         // metadatos del archivo de datos y del archivo indice
         File datos = new File( "ArchivoDisperso.Datos" );
         File disperso = new File( "Indice.Disperso" );
@@ -97,6 +135,8 @@ public class Prueba implements Constants {
         archivo.eliminacionLineal(suc);
 
         archivo.cerrar();
+        
+        vueltaTemporizador();
     }
 
     /*-----------------------------------------------------------------
@@ -104,49 +144,51 @@ public class Prueba implements Constants {
     /-----------------------------------------------------------------*/
 	public static void main( String[] args ) throws Exception {
 
-        double initTime = System.nanoTime();
+        //crear();
 
-        crear();
-
+        empezarTemporizador();
+    
         /*
-        busqueda( 1 );
-        busqueda( 10 );
-        busqueda( 11 );
-        busqueda( 100 );
-        busqueda( 1000 );
+        for (int i = 1; i <= MAX_SUC; i++) {
+            busqueda( i );
+        }
         */
 
-        //eliminacion();
-
-        double endTime = System.nanoTime();
-        double sparseIndexTime  = (endTime - initTime) / TIME_UNIT;
-
-        mostrar();
-
-        System.out.println("\nTiempo Indice Disperso: " + sparseIndexTime + " segundos");
+        /*
+        for (int j = MAX_CLNT; j >= 1; j--)
+            for (int i = 0; i < MAX_CLNT; i++)
+                eliminacion( j );
+        */
 
         /*
-        String a = "Sucursal11";
-        String b = "Sucursal100";
-        int c = Integer.parseInt( a.replaceAll( "\\D+","" ) );
-        int d = Integer.parseInt( a.replaceAll( "\\D+","" ) );
-        int value = c > d ? 1 : c == d ? 0 : -1;
-        System.out.println("value: " + value);
-        System.out.println("\"" + a + "\" "  +
-                ( value > 0  ? "greater than" : "equal or less than" ) +
-                " \"" + b  + "\"");
+        for (int i = 1; i <= MAX_SUC; i++) {
+            busquedaIntervalo( i );
+        }
+        */
 
-        /*
-        String a = "Sucursal0";
-        String b = "Sucursal1";
-        String c = "Sucursal2";
-        System.out.println( (a.compareTo(b) < 1 ? "Less" : "Greater") + " than"); // Less than
-        System.out.println( (a.compareTo(c) < 1 ? "Less" : "Greater") + " than"); // Less than
-        System.out.println( (b.compareTo(a) < 1 ? "Less" : "Greater") + " than"); // Greater than
-        System.out.println( (b.compareTo(c) < 1 ? "Less" : "Greater") + " than"); // Less than
-        System.out.println( (c.compareTo(a) < 1 ? "Less" : "Greater") + " than"); // Greater than
-        System.out.println( (c.compareTo(b) < 1 ? "Less" : "Greater") + " than"); // Greater than
-         */
+        pararTemporizador();
 
-	}
+    }
+
+	private static void empezarTemporizador() {
+
+        initTime = System.nanoTime();
+        currentTime = System.nanoTime();
+    }
+
+    private static void vueltaTemporizador() {
+
+        endTime = System.nanoTime();
+        final double lap  = (endTime - currentTime) / TIME_UNIT;
+        final double time  = (endTime - initTime) / TIME_UNIT;
+
+        System.out.println("Vuelta: " + lap + " segundos;\tTiempo: " + time + "\n");
+        currentTime = System.nanoTime();
+    }
+
+    private static void pararTemporizador() {
+
+        final double time  = (endTime - initTime) / TIME_UNIT;
+        System.out.println("Tiempo Total: " + time + " segundos\n");
+    }
 }

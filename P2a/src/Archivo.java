@@ -214,7 +214,7 @@ public class Archivo implements Constants  {
         
 		indiceDenso.mostrar();
         
-		System.out.println( "Nœmero de registros: " + size );
+		System.out.println( "Numero de registros: " + size );
 		raf.seek( 0 );
         
 		for( int i = 0; i < size; i++ ) {

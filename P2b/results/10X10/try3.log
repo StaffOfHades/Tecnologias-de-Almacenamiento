@@ -1,0 +1,135 @@
+Se crearon 10 clientes en la Sucursal  1
+Vuelta: 0.028389232 segundos;	Tiempo: 0.028391282
+
+Se crearon 10 clientes en la Sucursal  2
+Vuelta: 0.016123838 segundos;	Tiempo: 0.048884319
+
+Se crearon 10 clientes en la Sucursal  3
+Vuelta: 0.029948399 segundos;	Tiempo: 0.07893504
+
+Se crearon 10 clientes en la Sucursal  4
+Vuelta: 0.023698413 segundos;	Tiempo: 0.102751303
+
+Se crearon 10 clientes en la Sucursal  5
+Vuelta: 0.02012219 segundos;	Tiempo: 0.122977992
+
+Se crearon 10 clientes en la Sucursal  6
+Vuelta: 0.028206262 segundos;	Tiempo: 0.151291364
+
+Se crearon 10 clientes en la Sucursal  7
+Vuelta: 0.030553469 segundos;	Tiempo: 0.181944821
+
+Se crearon 10 clientes en la Sucursal  8
+Vuelta: 0.023419879 segundos;	Tiempo: 0.205429902
+
+Se crearon 10 clientes en la Sucursal  9
+Vuelta: 0.029781458 segundos;	Tiempo: 0.235314469
+
+Se crearon 10 clientes en la Sucursal 10
+Vuelta: 0.024596686 segundos;	Tiempo: 0.259977919
+
+Tiempo Total: 0.259977919 segundos
+
+Numero de entradas: 1
+( Sucursal  1,   0 )
+Numero de registros: 100
+( Sucursal  1,   1, Cliente  1, 1344.8017094595748 )
+( Sucursal  1,   2, Cliente  2, 22726.530751540206 )
+( Sucursal  1,   3, Cliente  3, 824.3921633227299 )
+( Sucursal  1,   4, Cliente  4, 11431.16434092366 )
+( Sucursal  1,   5, Cliente  5, 19652.701246369685 )
+( Sucursal  1,   6, Cliente  6, 15271.293765494134 )
+( Sucursal  1,   7, Cliente  7, 27466.84390927073 )
+( Sucursal  1,   8, Cliente  8, 16778.796874164662 )
+( Sucursal  1,   9, Cliente  9, 12765.487853911965 )
+( Sucursal  1,  10, Cliente 10, 27098.006044821206 )
+( Sucursal  2,  11, Cliente  1, 20285.19253554347 )
+( Sucursal  2,  12, Cliente  2, 17896.373973222177 )
+( Sucursal  2,  13, Cliente  3, 12894.762805796783 )
+( Sucursal  2,  14, Cliente  4, 25087.203883242273 )
+( Sucursal  2,  15, Cliente  5, 12948.974235448863 )
+( Sucursal  2,  16, Cliente  6, 29945.167796051388 )
+( Sucursal  2,  17, Cliente  7, 28021.601402600194 )
+( Sucursal  2,  18, Cliente  8, 26717.933518515387 )
+( Sucursal  2,  19, Cliente  9, 9966.580620908855 )
+( Sucursal  2,  20, Cliente 10, 6836.493045321785 )
+( Sucursal  3,  21, Cliente  1, 23999.07457111933 )
+( Sucursal  3,  22, Cliente  2, 3170.6642421374827 )
+( Sucursal  3,  23, Cliente  3, 20509.600559110324 )
+( Sucursal  3,  24, Cliente  4, 10330.197973949418 )
+( Sucursal  3,  25, Cliente  5, 12968.431957888062 )
+( Sucursal  3,  26, Cliente  6, 9468.858930260063 )
+( Sucursal  3,  27, Cliente  7, 21927.141645331667 )
+( Sucursal  3,  28, Cliente  8, 1278.2417761539768 )
+( Sucursal  3,  29, Cliente  9, 1340.5704953390762 )
+( Sucursal  3,  30, Cliente 10, 22892.744457385706 )
+( Sucursal  4,  31, Cliente  1, 3859.2817822866377 )
+( Sucursal  4,  32, Cliente  2, 10351.361472407758 )
+( Sucursal  4,  33, Cliente  3, 21908.436102525375 )
+( Sucursal  4,  34, Cliente  4, 4951.487824255427 )
+( Sucursal  4,  35, Cliente  5, 26057.46508922406 )
+( Sucursal  4,  36, Cliente  6, 225.68516342292259 )
+( Sucursal  4,  37, Cliente  7, 23723.44407613803 )
+( Sucursal  4,  38, Cliente  8, 14164.99949301668 )
+( Sucursal  4,  39, Cliente  9, 24840.571281472992 )
+( Sucursal  4,  40, Cliente 10, 3996.445898642979 )
+( Sucursal  5,  41, Cliente  1, 23529.978750994393 )
+( Sucursal  5,  42, Cliente  2, 29328.907484250998 )
+( Sucursal  5,  43, Cliente  3, 980.1938429573295 )
+( Sucursal  5,  44, Cliente  4, 2525.057516485943 )
+( Sucursal  5,  45, Cliente  5, 2553.778578746783 )
+( Sucursal  5,  46, Cliente  6, 4126.072915077903 )
+( Sucursal  5,  47, Cliente  7, 16353.119215038445 )
+( Sucursal  5,  48, Cliente  8, 1504.324874632355 )
+( Sucursal  5,  49, Cliente  9, 851.5627513533965 )
+( Sucursal  5,  50, Cliente 10, 22354.38638073806 )
+( Sucursal  6,  51, Cliente  1, 5001.12689479432 )
+( Sucursal  6,  52, Cliente  2, 166.51555323730489 )
+( Sucursal  6,  53, Cliente  3, 10576.10695896643 )
+( Sucursal  6,  54, Cliente  4, 22798.86817057406 )
+( Sucursal  6,  55, Cliente  5, 2162.644814439931 )
+( Sucursal  6,  56, Cliente  6, 27720.97872779589 )
+( Sucursal  6,  57, Cliente  7, 8061.673625265386 )
+( Sucursal  6,  58, Cliente  8, 28518.663019969026 )
+( Sucursal  6,  59, Cliente  9, 9047.24397681253 )
+( Sucursal  6,  60, Cliente 10, 7948.773729223218 )
+( Sucursal  7,  61, Cliente  1, 11833.305211940837 )
+( Sucursal  7,  62, Cliente  2, 4143.276192127928 )
+( Sucursal  7,  63, Cliente  3, 6106.113674932902 )
+( Sucursal  7,  64, Cliente  4, 19843.97251982825 )
+( Sucursal  7,  65, Cliente  5, 24122.503524232226 )
+( Sucursal  7,  66, Cliente  6, 14610.392006010872 )
+( Sucursal  7,  67, Cliente  7, 28517.652883578023 )
+( Sucursal  7,  68, Cliente  8, 24504.121568621355 )
+( Sucursal  7,  69, Cliente  9, 17529.363181484125 )
+( Sucursal  7,  70, Cliente 10, 20404.594620851894 )
+( Sucursal  8,  71, Cliente  1, 26903.394479571856 )
+( Sucursal  8,  72, Cliente  2, 6749.7755956349765 )
+( Sucursal  8,  73, Cliente  3, 18592.390869125957 )
+( Sucursal  8,  74, Cliente  4, 9184.366575088836 )
+( Sucursal  8,  75, Cliente  5, 22027.021428560118 )
+( Sucursal  8,  76, Cliente  6, 6560.08045251893 )
+( Sucursal  8,  77, Cliente  7, 25516.121629512603 )
+( Sucursal  8,  78, Cliente  8, 29009.538754578174 )
+( Sucursal  8,  79, Cliente  9, 13751.844652687458 )
+( Sucursal  8,  80, Cliente 10, 12654.853381286644 )
+( Sucursal  9,  81, Cliente  1, 24684.325270543566 )
+( Sucursal  9,  82, Cliente  2, 1082.07093293357 )
+( Sucursal  9,  83, Cliente  3, 19216.003886896964 )
+( Sucursal  9,  84, Cliente  4, 5590.297183577489 )
+( Sucursal  9,  85, Cliente  5, 5618.236754201794 )
+( Sucursal  9,  86, Cliente  6, 23071.06948897935 )
+( Sucursal  9,  87, Cliente  7, 24560.189797229847 )
+( Sucursal  9,  88, Cliente  8, 2454.004696880568 )
+( Sucursal  9,  89, Cliente  9, 22053.057984283147 )
+( Sucursal  9,  90, Cliente 10, 28344.08945157715 )
+( Sucursal 10,  91, Cliente  1, 20359.716092313003 )
+( Sucursal 10,  92, Cliente  2, 25470.42977752696 )
+( Sucursal 10,  93, Cliente  3, 21082.149594799503 )
+( Sucursal 10,  94, Cliente  4, 18909.046601470207 )
+( Sucursal 10,  95, Cliente  5, 8638.24930826365 )
+( Sucursal 10,  96, Cliente  6, 14150.967516034652 )
+( Sucursal 10,  97, Cliente  7, 7389.879306639659 )
+( Sucursal 10,  98, Cliente  8, 29211.62984351705 )
+( Sucursal 10,  99, Cliente  9, 25296.673269558127 )
+( Sucursal 10, 100, Cliente 10, 4446.725251122317 )

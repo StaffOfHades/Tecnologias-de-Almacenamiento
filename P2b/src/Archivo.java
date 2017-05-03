@@ -138,7 +138,7 @@ public class Archivo implements Constants {
             Registro temp = new Registro();
             boolean found = false;
             int i = -1;
-            final int max = X_INTERVAL * MAX_CLNT - 1;
+            final int max =  ( (agrupa ? X_INTERVAL : 1 ) * MAX_CLNT) - 1;
 
             while( !found && i < max) {
 
@@ -155,8 +155,7 @@ public class Archivo implements Constants {
 
             posicion += i;
 
-            System.out.println("\"" + clave + "\" empieza en la posicion "
-                    + ( posicion + 1) + "\n");
+            System.out.println("\"" + clave + "\" empieza en la posicion " + posicion );
 				
 			return posicion;
 		}
@@ -166,16 +165,73 @@ public class Archivo implements Constants {
 		return SIN_ASIGNAR;
 	}
 
+    public int[] busquedaLinealIntervalo( String clave ) throws IOException {
+
+		final int indice = indiceDisperso.buscarIndice( clave );
+
+		if( indice != SIN_ASIGNAR ) {
+
+		    int posicion[] = new int[2]; 
+            posicion[0] = indiceDisperso.getLiga( indice );
+
+            Registro temp = new Registro();
+            boolean found = false;
+            int i = -1;
+            int max =  ( (agrupa ? X_INTERVAL : 1 ) * MAX_CLNT) - 1;
+
+            while( !found && i < max) {
+
+                raf.seek( (posicion[0] + ++i) * temp.length() );
+                temp.read( raf );
+                found = temp.getSucursal().equals( clave );
+            }
+
+            if ( !found ) {
+
+                System.out.println("Error al buscar \"" + clave + "\" en las posiciones ["
+                        + posicion[0] +  ", " + (posicion[0] + max) + "]\n");
+                int[] nulo = { SIN_ASIGNAR, SIN_ASIGNAR };
+                return nulo;
+            }
+
+            posicion[0] = posicion[0] + i;
+
+		    final int size = (int) raf.length() / temp.length() - 1;
+            raf.seek( size * temp.length() );
+            temp.read( raf );
+            boolean same = true;
+            max = temp.getSucursal().equals( clave ) ? (MAX_CLNT - 1) : max;
+            i = 0;
+            
+            while( same && i < max ) {
+                
+                raf.seek( (posicion[0] + ++i) * temp.length() );
+                temp.read( raf );
+                same = temp.getSucursal().equals( clave );
+            }
+            posicion[1] = posicion[0] + i;
+
+            System.out.println("\"" + clave + "\" se encuentra en el intervalo ["
+                    + posicion[0] + ", " + posicion[1] + "]");
+	
+			return posicion;
+		}
+
+		System.out.println("Valor de busqueda \"" + clave + "\" no encontrado\n");
+		
+        int[] nulo = { SIN_ASIGNAR, SIN_ASIGNAR };
+        return nulo;
+	}
 
     /*------------------------------------------------------------------
    /  Eliminacion
    /------------------------------------------------------------------*/
 
-	public void eliminacionLineal( String clave ) throws IOException {
+	public boolean eliminacionLineal( String clave ) throws IOException {
 
 		final int posicion = busquedaLineal( clave );
 		
-		if( posicion == SIN_ASIGNAR ) return;
+		if( posicion == SIN_ASIGNAR ) return false;
 
         Registro temp = new Registro();
 		raf.seek( posicion * temp.length() );
@@ -187,6 +243,8 @@ public class Archivo implements Constants {
 		
 		compactar();
         recalcularIndice();
+
+		return true;
 	}
 
     /*------------------------------------------------------------------
@@ -211,6 +269,16 @@ public class Archivo implements Constants {
                                      + registro.getSaldo() + " )" );
 		}
 	}
+
+	/*-----------------------------------------------------------------
+    / Borrar
+    /-----------------------------------------------------------------*/
+
+    public void borrar() throws IOException {
+
+        raf.setLength(0);
+        indiceDisperso.borrar();
+    }
 
     /*------------------------------------------------------------------
     /  Cerrar

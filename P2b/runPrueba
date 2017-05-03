@@ -9,4 +9,6 @@ elif [ ! -z "$1" ]; then
     echo "Unexpected argument recieved ; did you mean -c (compile)?"
 fi
 rm ArchivoDisperso.Datos  Indice.Disperso
+cp "ArchivoDisperso.Datos copy" "ArchivoDisperso.Datos"
+cp "Indice.Disperso copy" "Indice.Disperso"
 java -cp bin Prueba 
