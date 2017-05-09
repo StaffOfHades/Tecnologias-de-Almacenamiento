@@ -1,7 +1,7 @@
 
 // Faltan los import
 
-public class Hoja implements Constants {
+public class Hoja implements Constants, Nodo {
 
     private Hoja der
     private Hoja izq;

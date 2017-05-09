@@ -1,10 +1,11 @@
 
 // Faltan los import
 
-public class Raiz implements Constants {
+public class Raiz implements Constants, Nodo {
 
     private Nodo[] nodos = new Nodo[N + 1];
     private String[] claves = new String[N];
+    private int indiceMax = 0; // (N - 1) / 2 < indiceMax < N
     private Raiz padre;
 
     public Raiz( Raiz padre ) {
