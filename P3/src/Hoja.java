@@ -1,9 +1,11 @@
 
-// Faltan los import
+
+import java.io.IOException;
+import java.io.RandomAccessFile;
 
 public class Hoja implements Constants, Nodo {
 
-    private Hoja der
+    private Hoja der;
     private Hoja izq;
     private Raiz padre;
     private int indiceMax = 0; // (N - 1) / 2 < indiceMax < N
@@ -33,32 +35,55 @@ public class Hoja implements Constants, Nodo {
     }
 
     /**
+     *  Si la posicion existe, regresa el registro.
+     * @param posicion_indice Posicion global del RedIndice dentro del archivo.
+     * @return El RegIndice si existe.
+     */
+    @Override
+    public RegIndice buscar(int posicion_indice) throws IOException {
+        // TODO
+
+        return null;
+    }
+
+    /**
      * Busca linealmente dentro de los limites si existe un registro bajo 
      * la clave indicada, y lo crea si no.
      * @param clave Clave bajo la cual esta el RegIndice.
-     * @param liga Liga a la posicion del primer Registro bajo la clave.
+     * @return Posicion global del RegIndice
      */
     @Override
-    public void insertar( String clave, int liga )
+    public int insertar( String clave )
         throws IOException
     {
         // TODO
 
         // Busqueda va de inicio a fin
-        int posicion;
+        int posicion = SIN_ASIGNAR;
 
-        insertarEn( clave, posicion, liga );
+        insertarEn( clave, posicion );
+
+        return posicion;
+    }
+
+    /**
+     * Si la posicion existe, modifica la liga.
+     * @param posicion Posicion global del RedIndice dentro del archivo.
+     * @param liga Direccion a donde apunta la nueva liga.
+     */
+    @Override
+    public void modificar(int posicion, int liga) throws IOException {
+        // TODO
     }
 
     /**
      * Inserte la clave en la posicion dada, agregando la liga,
      * y moviendo los registro para crear espacio.
      * @param clave Clave bajo la cual esta el RegIndice
-     * @param liga Liga a la posicion del primer Registro bajo la clave.
      * @param posicion Posicion global del RedIndice dentro del archivo.
      */
-    private void insertarEn( String clave, int liga,
-                            int posicion ) throws IOException
+    private void insertarEn( String clave, int posicion )
+            throws IOException
     {
         // TODO 
         
@@ -67,12 +92,12 @@ public class Hoja implements Constants, Nodo {
 
     /**
      * Borrar el RegIndice si existe bajo una clave.
-     * @param posicion Posicion global del RedIndice dentro del archivo.
+     * @param clave Clave bajo la cual se debe encontrar el registro.
      */
     public void borrar(String clave) throws IOException
     {
         // TODO
-        int posicion;
+        int posicion = SIN_ASIGNAR;
 
         borrarEn(posicion);
     }

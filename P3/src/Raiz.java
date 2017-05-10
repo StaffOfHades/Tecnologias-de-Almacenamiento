@@ -1,6 +1,8 @@
 
 // Faltan los import
 
+import java.io.IOException;
+
 public class Raiz implements Constants, Nodo {
 
     private Nodo[] nodos = new Nodo[N + 1];
@@ -21,37 +23,64 @@ public class Raiz implements Constants, Nodo {
     @Override
     public RegIndice buscar(String clave) throws IOException {
         // TODO
-        int posicion;
+        int posicion = SIN_ASIGNAR;
 
         return nodos[posicion].buscar(clave);
     }
 
     /**
-     * Busca linealmente en que hoja debe ser insertado la clave indicada 
-     * @param clave Clave bajo la cual esta el RegIndice.
-     * @param liga Liga a la posicion del primer Registro bajo la clave.
+     * Busca linealmente en cual hoja se podria encontrar la clave indicada,
+     * y le pida a la hoja que lo busque.
+     * @param posicion_indice Posicion global del RedIndice dentro del archivo.
+     * @return El RegIndice si existe.
      */
     @Override
-    public void insertar( String clave, int liga )
+    public RegIndice buscar(int posicion_indice) throws IOException {
+        // TODO
+        int posicion = SIN_ASIGNAR;
+
+        return nodos[posicion].buscar(posicion_indice);
+    }
+
+    /**
+     * Busca linealmente en que hoja debe ser insertado la clave indicada 
+     * @param clave Clave bajo la cual esta el RegIndice.
+     * @return Posicion global del RegIndice
+     */
+    @Override
+    public int insertar(String clave)
         throws IOException
     {   
         // TODO
-        int posicion;
+        int posicion = SIN_ASIGNAR;
 
-        return nodos[posicion].insertar( clave, liga );            
+        return nodos[posicion].insertar(clave);
     }
-    
+
+    /**
+     * Busca linealmente en que hoja debe ser modificada la liga
+     * @param posicion_indice Posicion global del RedIndice dentro del archivo.
+     * @param liga Direccion a donde apunta la nueva liga.
+     */
+    @Override
+    public void modificar(int posicion_indice, int liga) throws IOException {
+        // TODO
+        int posicion = SIN_ASIGNAR;
+
+        nodos[posicion].modificar(posicion_indice, liga);
+    }
+
     /** 
      * Borrar el RegIndice que exista bajo la clave.
-     * @param posicion Posicion global del RedIndice dentro del archivo.
+     * @param clave Clave bajo la cual se debe encontrar el registro.
      */
     @Override
     public void borrar(String clave) throws IOException
     {   
         // TODO
-        int posicion;
+        int posicion = SIN_ASIGNAR;
 
-        return nodos[posicion].borrar(clave);
+        nodos[posicion].borrar(clave);
     }   
 
     /** 

@@ -18,6 +18,8 @@ public interface Constants {
 
     int SAL_DECIMAL_DIGITS = 4;
     int SAL_DIGITS = 5;
+
+    int N = 10;
     
     int TIME_UNIT = 1000000000; // Nano seconds
 

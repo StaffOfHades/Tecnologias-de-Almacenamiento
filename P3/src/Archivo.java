@@ -4,25 +4,48 @@ import java.io.RandomAccessFile;
 public class Archivo implements Constants {
 
 	private RandomAccessFile raf = null;
-	private IndiceDisperso indiceDisperso = null;
+	private Arbol arbol = null;
 
 	private boolean agrupa = true;
 
     public Archivo(RandomAccessFile archivo, RandomAccessFile indice) {
 
 		raf = archivo;
-		indiceDisperso = new IndiceDisperso(indice);
+		arbol = new Arbol(indice);
 	}
 
-	/*------------------------------------------------------------------
-    /  Insertar
-    /------------------------------------------------------------------*/
-
-	public void insertar( Registro registry ) throws IOException {
+	public void insertar( Registro registro ) throws IOException {
 		
-        final int size = (int) raf.length() / registry.length();
-		insertarEn( size, registry );
-		recalcularIndice();
+        final int size = (int) raf.length() / registro.length();
+		insertarEn( size, registro );
+
+        int posicionIndice = arbol.insertar( registro.getSucursal() );
+
+        if( posicionIndice == arbol.tamaño() - 1 ) {
+
+            int posicionArchivo = (int) raf.length() / registro.length();
+            insertarEn( posicionArchivo, registro );
+
+            final RegIndice indice = arbol.buscar(posicionIndice);
+
+            if( indice.getLiga() == SIN_ASIGNAR )
+                arbol.modificar( posicionIndice, posicionArchivo );
+
+        } else {
+
+            int posicionArchivo = indiceDenso.getLiga( posicionIndice + 1 );
+            insertarEn( posicionArchivo, registro );
+
+            if( indiceDenso.getLiga( posicionIndice ) == SIN_ASIGNAR )
+                indiceDenso.updateLiga( posicionIndice, posicionArchivo );
+
+            for( posicionIndice++;
+                 posicionIndice < indiceDenso.size(); posicionIndice++ )
+            {
+                posicionArchivo = indiceDenso.getLiga( posicionIndice ) + 1;
+                indiceDenso.updateLiga( posicionIndice, posicionArchivo );
+            }
+        }
 	}
 
     private void insertarEn( int posicion, Registro registro ) throws IOException {
@@ -39,52 +62,6 @@ public class Archivo implements Constants {
         raf.seek( posicion * registro.length() );
         registro.write( raf );
     }
-
-    /*------------------------------------------------------------------
-    /  Recalcular indice
-    /------------------------------------------------------------------*/
-
-	public void recalcularIndice() throws IOException {
-		String prevTemp = "@";
-			
-        indiceDisperso.raf.setLength( 0 );
-		Registro registry = new Registro();
-		
-        final int size = (int) raf.length() / registry.length();
-		int interval = 0;
-
-        if (size > 0) {
-
-            raf.seek( 0 );
-            registry.read( raf );
-
-            indiceDisperso.insertarEn( 0, registry.getSucursal() );
-            indiceDisperso.updateLiga( 0, 0 );
-            prevTemp = registry.getSucursal();
-        }
-
-		for( int i = 1; i < size; i++) {
-
-			raf.seek( i * registry.length() );
-			registry.read( raf );
-
-			if ( !agrupa || !registry.getSucursal().equals( prevTemp ) )
-				interval++;
-
-			if( interval == X_INTERVAL ){
-
-				interval = 0;
-				final int indiceSize = (int) indiceDisperso.raf.length() / indiceDisperso.registro.length();
-				indiceDisperso.insertarEn( indiceSize, registry.getSucursal() );
-				indiceDisperso.updateLiga( indiceSize, i );
-			}
-			prevTemp = registry.getSucursal();
-		}
-	}
-
-	 /*------------------------------------------------------------------
-    /  Compactar
-    /------------------------------------------------------------------*/
 
 	private void compactarDesde( int position ) throws IOException {
 
@@ -119,13 +96,8 @@ public class Archivo implements Constants {
 
             compactarDesde( i );
             raf.setLength( raf.length() - temp.length() );
-            recalcularIndice();
         }
     }
-
-     /*------------------------------------------------------------------
-    /  Busqueda
-    /------------------------------------------------------------------*/
 
 	public int busquedaLineal(String clave ) throws IOException {
 
@@ -223,10 +195,6 @@ public class Archivo implements Constants {
         return nulo;
 	}
 
-    /*------------------------------------------------------------------
-   /  Eliminacion
-   /------------------------------------------------------------------*/
-
 	public boolean eliminacionLineal( String clave ) throws IOException {
 
 		final int posicion = busquedaLineal( clave );
@@ -247,10 +215,6 @@ public class Archivo implements Constants {
 		return true;
 	}
 
-    /*------------------------------------------------------------------
-    /  Mostrar
-    /------------------------------------------------------------------*/
-
 	public void mostrar() throws IOException {
 
 		Registro registro = new Registro();
@@ -270,19 +234,11 @@ public class Archivo implements Constants {
 		}
 	}
 
-	/*-----------------------------------------------------------------
-    / Borrar
-    /-----------------------------------------------------------------*/
-
     public void borrar() throws IOException {
 
         raf.setLength(0);
         indiceDisperso.borrar();
     }
-
-    /*------------------------------------------------------------------
-    /  Cerrar
-    /------------------------------------------------------------------*/
 
     public void cerrar() throws IOException {
         
@@ -290,20 +246,4 @@ public class Archivo implements Constants {
         indiceDisperso.cerrar();
     }
 
-
-       /*
-	public void sparseRemove(String target) throws IOException {
-
-        Registro registry = new Registro();
-
-		int position = indiceDisperso.buscarIndice(target);
-		System.out.println("position: " + position);
-
-		expandirDesde( position );
-
-        indiceDisperso.moverLigas( position, SIN_ASIGNAR );
-		raf.setLength( raf.length() - registry.length() );
-		recalcularIndice();
-	}
-	*/
 }
