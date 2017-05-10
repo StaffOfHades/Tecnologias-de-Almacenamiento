@@ -89,7 +89,7 @@ public class Prueba implements Constants {
 
         // Busqueda de un registro por sucursal
         String suc = "Sucursal " + String.format( "%" + SUC_DIGITS + "d", sucursalNum );
-        archivo.busquedaLineal( suc );
+        archivo.buscar( suc );
 
         archivo.cerrar();
 
@@ -110,7 +110,7 @@ public class Prueba implements Constants {
 
         // Busqueda de un registro por sucursal
         String suc = "Sucursal " + String.format( "%" + SUC_DIGITS + "d", sucursalNum );
-        archivo.busquedaLinealIntervalo( suc );
+        archivo.buscarGrupo( suc );
 
         archivo.cerrar();
     
@@ -132,7 +132,7 @@ public class Prueba implements Constants {
 
         // Eliminacion de de un registro utlizanod sucursal como referencia
         String suc = "Sucursal " + String.format( "%" + SUC_DIGITS + "d", sucursalNum );
-        archivo.eliminacionLineal(suc);
+        archivo.borrar(suc);
 
         archivo.cerrar();
         

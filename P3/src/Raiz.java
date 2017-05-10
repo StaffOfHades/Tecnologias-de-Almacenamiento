@@ -59,6 +59,19 @@ public class Raiz implements Constants, Nodo {
 
     /**
      * Busca linealmente en que hoja debe ser modificada la liga
+     * @param clave Clave bajo la cual esta el RegIndice.
+     * @param liga Direccion a donde apunta la nueva liga.
+     */
+    @Override
+    public void modificar(String clave, int liga) throws IOException {
+        // TODO
+        int posicion = SIN_ASIGNAR;
+
+        nodos[posicion].modificar(clave, liga);
+    }
+
+    /**
+     * Busca linealmente en que hoja debe ser modificada la liga
      * @param posicion_indice Posicion global del RedIndice dentro del archivo.
      * @param liga Direccion a donde apunta la nueva liga.
      */
@@ -71,7 +84,7 @@ public class Raiz implements Constants, Nodo {
     }
 
     /** 
-     * Borrar el RegIndice que exista bajo la clave.
+     * Busca linealmente en que hoja debe ser borrado
      * @param clave Clave bajo la cual se debe encontrar el registro.
      */
     @Override
@@ -81,7 +94,19 @@ public class Raiz implements Constants, Nodo {
         int posicion = SIN_ASIGNAR;
 
         nodos[posicion].borrar(clave);
-    }   
+    }
+
+    /**
+     * Busca linealmente en que hoja debe ser modificada la liga
+     * @param posicion_indice Posicion global del RedIndice dentro del archivo.
+     */
+    @Override
+    public void borrar(int posicion_indice) throws IOException {
+        // TODO
+        int posicion = SIN_ASIGNAR;
+
+        nodos[posicion].borrar(posicion_indice);
+    }
 
     /** 
      * Mostrar todos los RegIndice adminstrados por esta hoja.
@@ -94,5 +119,14 @@ public class Raiz implements Constants, Nodo {
             n.mostrar(); 
     }
 
+    /**
+     * Cerrar el acceso de archivo para todas las hojas
+     */
+    @Override
+    public void cerrar() throws IOException {
+        for( Nodo n : nodos )
+            if( n != null)
+                n.cerrar();
+    }
 }
 

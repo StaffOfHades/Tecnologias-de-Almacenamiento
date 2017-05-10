@@ -66,6 +66,23 @@ public class Hoja implements Constants, Nodo {
         return posicion;
     }
 
+
+    /**
+     * Busca linealmente dentro de los limites si existe un registro bajo
+     * la clave indicada, y lo modifica si si.
+     * @param clave Clave bajo la cual esta el RegIndice
+     * @param liga Direccion a donde apunta la nueva liga.
+     */
+    @Override
+    public void modificar(String clave, int liga) throws IOException {
+        // TODO
+
+        // Busqueda va de inicio a fin
+        int posicion = SIN_ASIGNAR;
+
+        modificar(posicion, liga);
+    }
+
     /**
      * Si la posicion existe, modifica la liga.
      * @param posicion Posicion global del RedIndice dentro del archivo.
@@ -74,20 +91,6 @@ public class Hoja implements Constants, Nodo {
     @Override
     public void modificar(int posicion, int liga) throws IOException {
         // TODO
-    }
-
-    /**
-     * Inserte la clave en la posicion dada, agregando la liga,
-     * y moviendo los registro para crear espacio.
-     * @param clave Clave bajo la cual esta el RegIndice
-     * @param posicion Posicion global del RedIndice dentro del archivo.
-     */
-    private void insertarEn( String clave, int posicion )
-            throws IOException
-    {
-        // TODO 
-        
-        // Se debe actualizae inicio y fin
     }
 
     /**
@@ -103,14 +106,12 @@ public class Hoja implements Constants, Nodo {
     }
 
     /**
-     * Borrar el RegIndice en la posicion dada.
+     * Borrar el RegIndice en la posicion especificada
      * @param posicion Posicion global del RedIndice dentro del archivo.
      */
-    private void borrarEn(int posicion) throws IOException
-    {
-        // TODO
-
-        // Se debe actualizar inicio y fin
+    @Override
+    public void borrar(int posicion) throws IOException {
+        borrarEn(posicion);
     }
 
     /**
@@ -124,7 +125,33 @@ public class Hoja implements Constants, Nodo {
     /**
      * Cerrar el acceso de archivo para esta hoja.
      */
+    @Override
     public void cerrar() throws IOException {
         raf.close();
+    }
+
+    /**
+     * Inserte la clave en la posicion dada, agregando la liga,
+     * y moviendo los registro para crear espacio.
+     * @param clave Clave bajo la cual esta el RegIndice
+     * @param posicion Posicion global del RedIndice dentro del archivo.
+     */
+    private void insertarEn( String clave, int posicion )
+            throws IOException
+    {
+        // TODO
+
+        // Se debe actualizar inicio y fin
+    }
+
+    /**
+     * Borrar el RegIndice en la posicion dada.
+     * @param posicion Posicion global del RedIndice dentro del archivo.
+     */
+    private void borrarEn(int posicion) throws IOException
+    {
+        // TODO
+
+        // Se debe actualizar inicio y fin
     }
 }

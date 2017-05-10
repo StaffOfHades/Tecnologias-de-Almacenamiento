@@ -68,10 +68,22 @@ public class Arbol {
         // TODO
 
         // Si raiz existe
-        raiz.borrar( clave );
+        raiz.borrar(clave);
 
         // Balancear
         balancear();
+    }
+
+    /**
+     * Modificar la liga desde la raiz.
+     *  @param clave Clave bajo la cual se debe encontrar el registro.
+     * @param liga Direccion a donde apunta la nueva liga.
+     */
+    public void modificar(String clave, int liga) throws IOException {
+        // TODO
+
+        // Si raiz existe
+        raiz.modificar(clave, liga);
     }
 
     /**
@@ -87,13 +99,26 @@ public class Arbol {
     }
 
     /**
-     * Balancear el arbol en base a N.
+     * Borrar todos los RegIndice desde la raiz.
      */
-    private void balancear() {
+    public void borrar() throws IOException
+    {
+        // TODO
+    }
 
-        // Se usan los indices para determinar el tamaño ocupado.
+    /**
+     * Borrar el RegIndice desde la raiz.
+     * @param posicion Posicion global del RedIndice dentro del archivo.
+     */
+    public void borrar(int posicion) throws IOException
+    {
+        // TODO
 
-        // Si es una raiz, se modifican las claves
+        // Si raiz existe
+        raiz.borrar(posicion);
+
+        // Balancear
+        balancear();
     }
 
     /** 
@@ -104,5 +129,22 @@ public class Arbol {
 
         // Si la raiz existe,
         raiz.mostrar();
-    } 
+    }
+
+    /**
+     * Cerrar el acceso de archivo para todas las hojas
+     */
+    public void cerrar() throws IOException {
+        raiz.cerrar();
+    }
+
+    /**
+     * Balancear el arbol en base a N.
+     */
+    private void balancear() {
+
+        // Se usan los indices para determinar el tamaño ocupado.
+
+        // Si es una raiz, se modifican las claves
+    }
 }
