@@ -144,9 +144,11 @@ public class Prueba implements Constants {
     /-----------------------------------------------------------------*/
 	public static void main( String[] args ) throws Exception {
 
-        //crear();
+        crear();
 
-        empezarTemporizador();
+        //empezarTemporizador();
+
+        mostrar();
     
         /*
         for (int i = 1; i <= MAX_SUC; i++) {
@@ -166,7 +168,7 @@ public class Prueba implements Constants {
         }
         */
 
-        pararTemporizador();
+        //pararTemporizador();
 
     }
 

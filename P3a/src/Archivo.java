@@ -75,21 +75,19 @@ public class Archivo implements Constants {
         if( posicionIndice == arbol.tamaño() - 1 ) {
 
             int posicionArchivo = (int) raf.length() / registro.length();
-            insertarEn( posicionArchivo, registro );
 
             final RegIndice indice = arbol.buscar(posicionIndice);
 
-            if( indice.getLiga() == SIN_ASIGNAR )
-                arbol.modificar( posicionIndice, posicionArchivo );
+            if( indice != null && indice.getLiga() == SIN_ASIGNAR )
+                arbol.modificar( posicionIndice, posicionArchivo - 1 );
 
         } else {
 
-            RegIndice indice = arbol.buscar( posicionIndice + 1 );
+            RegIndice indice = arbol.buscar( posicionIndice - 1 );
             int posicionArchivo = indice.getLiga();
-            insertarEn( posicionArchivo, registro );
             indice = arbol.buscar(posicionIndice);
 
-            if( indice.getLiga() == SIN_ASIGNAR )
+            if( indice != null && indice.getLiga() == SIN_ASIGNAR )
                 arbol.modificar( posicionIndice, posicionArchivo );
 
             final int tamaño_arbol = arbol.tamaño();
@@ -97,7 +95,7 @@ public class Archivo implements Constants {
             for( posicionIndice++;
                  posicionIndice < tamaño_arbol; posicionIndice++ )
             {
-                indice = arbol.buscar( posicionIndice);
+                indice = arbol.buscar( posicionIndice );
                 posicionArchivo = indice.getLiga() + 1;
                 arbol.modificar( posicionIndice, posicionArchivo );
             }
@@ -125,7 +123,7 @@ public class Archivo implements Constants {
             raf.seek( indice.getLiga() * registro.length() );
             registro.write( raf );
 
-            if (raf.getFilePointer() == raf.length())
+            if ( raf.getFilePointer() == raf.length() )
                 //Con esto se compacta el archivo de Indices si este es el ultimo registro
                 arbol.borrar(indice.getClave());
             else {
@@ -180,6 +178,14 @@ public class Archivo implements Constants {
 
     private void insertarEn( int posicion, Registro registro ) throws IOException {
 
+
+        System.out.println( "Se creo registro para posicion: " + posicion );
+        System.out.println( "( " + registro.getSucursal() + ", "
+                + String.format( "%" + NUM_DIGITS + "d", registro.getNumero() ) + ", "
+                + registro.getNombre() + ", "
+                + registro.getSaldo() + " )" );
+        System.out.println( "Total: " + ( tamaño() + 1 ) + "\n" );
+
         final int tamaño = (int) raf.length() / registro.length() - 1;
 
         for( int i = tamaño; i >= posicion; i-- ) {
@@ -194,6 +200,11 @@ public class Archivo implements Constants {
         }
         raf.seek( posicion * registro.length() );
         registro.write(raf);
+    }
+
+    private int tamaño() throws IOException {
+        Registro registro = new Registro();
+        return (int) raf.length() / registro.length();
     }
 
     public void compactar() throws IOException {
