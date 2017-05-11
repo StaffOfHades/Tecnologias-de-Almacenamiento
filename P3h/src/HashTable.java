@@ -139,10 +139,27 @@ public class HashTable implements Constants {
 		        bits[j] = (input & (1 << j)) != 0;
 		    
 		    //Comparing for not wrong check of this level.
-            final int max = bits.length;
+            /*
 		    for( int j = 0; j < max; j++ )
 		    	if( bits[j] == binaryBits[j] )
                     correctness[j]++;
+
+             for(int j = 0; j < bits.length; j++) {
+
+                if(bits[j] != binaryBits[j])
+                    break;
+                correctness[i]++;
+            }
+             */
+            //Comparing for not wrong check of this level.
+            final int max = bits.length;
+            boolean igual = true;
+            int j = -1;
+            while( igual && ++j < max) {
+                igual = bits[j] == binaryBits[j];
+                if(igual)
+                    correctness[i]++;
+            }
 	    }
 	    
 	    //Chosing the largest active that is not wrong

@@ -16,7 +16,7 @@ public class MainClassOld
 		}catch(IOException e){e.printStackTrace();} 
 		
 		HashTableOld hTable = new HashTableOld();
-		for(int s = 0; s <= 10; s++)
+		for(int s = 0; s <= 100; s++)
 		{
 			int max = 9000;
 			int min = 1000;

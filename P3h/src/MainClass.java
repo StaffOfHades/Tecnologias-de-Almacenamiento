@@ -6,7 +6,7 @@ import java.util.Random;
 public class MainClass {
 
     public static HashTable create() throws IOException {
-        Random rand = new Random();
+        Random rand = new Random( System.currentTimeMillis() );
 
         /*
         File file = new File( "Hash.Info" );
@@ -16,7 +16,7 @@ public class MainClass {
         HashTable table = new HashTable();
         final int max = 9000;
         final int min = 1000;
-        for(int i = 0; i <= 8; i++) {
+        for(int i = 0; i <= 30; i++) {
             int randomNum = rand.nextInt( (max - min) + 1) + min;
             System.out.println("Inserseting  sucursal " + i);
             table.insert( ( "Sucursal " + i ), randomNum );
