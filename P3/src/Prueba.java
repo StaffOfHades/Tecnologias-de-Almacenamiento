@@ -52,6 +52,7 @@ public class Prueba implements Constants {
             //vueltaTemporizador();
         }
 
+
         archivo.cerrar();
 
         pararTemporizador();
@@ -71,6 +72,8 @@ public class Prueba implements Constants {
 
         // imprime los registros del indice y los del archivo
         archivo.mostrar();
+
+        archivo.mostrarArbol();
 
         archivo.cerrar();
 	}

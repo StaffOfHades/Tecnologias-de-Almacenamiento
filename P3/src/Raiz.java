@@ -12,13 +12,48 @@ public class Raiz implements Constants, Nodo {
     private String[] claves = new String[N];
     private int indiceMax = 0; // (N - 1) / 2 < indiceMax < N
     private Raiz padre;
-    private RandomAccessFile raf;
+    private static RandomAccessFile raf;
     private static Arbol arbol;
 
-    public Raiz( Arbol arbol, Raiz padre, RandomAccessFile raf ) {
-        this.arbol = arbol;
-        this.padre = padre;
-        this.raf = raf;
+
+    public static void setArbol(Arbol arbol) {
+        Raiz.arbol = arbol;
+    }
+
+    public static void setRaf(RandomAccessFile raf) {
+        Raiz.raf = raf;
+    }
+
+    @Override
+    public void setPadre(Raiz raiz) {
+        padre = raiz;
+    }
+
+    @Override
+    public void borrar() throws IOException {
+
+        final int max = tamaño();
+        for( int i = 0; i < max; i++ )
+            nodos[i].borrar();
+
+        for( int i = 0; i < max; i++ ) {
+
+            if( i > 0 ) claves[i - 1] = null;
+            nodos[i] = null;
+        }
+
+        padre = null;
+        izq = null;
+        der = null;
+    }
+
+    /**
+     * Busca linealmente en que hoja debe ser borrado
+     * @param clave Clave bajo la cual se debe encontrar el registro.
+     */
+    @Override
+    public void borrar(String clave) throws IOException {
+        nodos[buscarPosicion(clave)].borrar(clave);
     }
 
     /**
@@ -29,43 +64,12 @@ public class Raiz implements Constants, Nodo {
      */
     @Override
     public RegIndice buscar(String clave) throws IOException {
-
-        final int claveBusq = Integer.parseInt( clave.replaceAll( "\\D+","" ) );
-        int posicion = 0;
-        int claveInd = Integer.parseInt( claves[posicion].replaceAll( "\\D+","" ) );
-
-        if( claveBusq < claveInd )
-            return nodos[posicion].buscar(clave);
-
-        final int tamaño = claves.length;
-        boolean mayor = true;
-        posicion = -1;
-        while( mayor && ++posicion < tamaño ) {
-            claveInd = Integer.parseInt( claves[posicion].replaceAll( "\\D+","" ) );
-            mayor = claveBusq < claveInd;
-        }
-
-        return nodos[posicion].buscar(clave);
+        return nodos[buscarPosicion(clave)].buscar(clave);
     }
 
-    /**
-     * Busca linealmente en cual hoja se podria encontrar la clave indicada,
-     * y le pida a la hoja que lo busque.
-     * @param posicion_indice Posicion global del RedIndice dentro del archivo.
-     * @return El RegIndice si existe.
-     */
     @Override
-    public RegIndice buscar(int posicion_indice) throws IOException {
-
-        if( posicion_indice >= tamaño() ) return null;
-
-        RegIndice indice = new RegIndice();
-
-        //Se posiciona el puntero enla posicion del registro y se lee
-        raf.seek( posicion_indice * indice.length() );
-        indice.read(raf);
-
-        return buscar(indice.getClave());
+    public void insertar(RegIndice indice) throws IOException {
+        nodos[buscarPosicion(indice.getClave())].insertar(indice);
     }
 
     /**
@@ -74,25 +78,8 @@ public class Raiz implements Constants, Nodo {
      * @return Posicion global del RegIndice
      */
     @Override
-    public int insertar(String clave)
-        throws IOException
-    {
-        final int claveBusq = Integer.parseInt( clave.replaceAll( "\\D+","" ) );
-        int posicion = 0;
-        int claveInd = Integer.parseInt( claves[posicion].replaceAll( "\\D+","" ) );
-
-        if( claveBusq < claveInd )
-            return nodos[posicion].insertar(clave);
-
-        final int tamaño = claves.length;
-        boolean mayor = true;
-        posicion = -1;
-        while( mayor && ++posicion < tamaño ) {
-            claveInd = Integer.parseInt( claves[posicion].replaceAll( "\\D+","" ) );
-            mayor = claveBusq < claveInd;
-        }
-
-        return nodos[posicion].insertar(clave);
+    public int insertar(String clave) throws IOException {
+        return nodos[buscarPosicion(clave)].insertar(clave);
     }
 
     /**
@@ -102,125 +89,181 @@ public class Raiz implements Constants, Nodo {
      */
     @Override
     public void modificar(String clave, int liga) throws IOException {
-
-        final int claveBusq = Integer.parseInt( clave.replaceAll( "\\D+","" ) );
-        int posicion = 0;
-        int claveInd = Integer.parseInt( claves[posicion].replaceAll( "\\D+","" ) );
-
-        if( claveBusq < claveInd )
-            nodos[posicion].modificar(clave, liga);
-
-        final int tamaño = claves.length;
-        boolean mayor = true;
-        posicion = -1;
-        while( mayor && ++posicion < tamaño ) {
-            claveInd = Integer.parseInt( claves[posicion].replaceAll( "\\D+","" ) );
-            mayor = claveBusq < claveInd;
-        }
-
-        nodos[posicion].modificar(clave, liga);
-    }
-
-    /**
-     * Busca linealmente en que hoja debe ser modificada la liga
-     * @param posicion_indice Posicion global del RedIndice dentro del archivo.
-     * @param liga Direccion a donde apunta la nueva liga.
-     */
-    @Override
-    public void modificar(int posicion_indice, int liga) throws IOException {
-
-        RegIndice indice = new RegIndice();
-
-        //Se posiciona el puntero enla posicion del registro y se lee
-        raf.seek( posicion_indice * indice.length() );
-        indice.read(raf);
-
-        modificar( indice.getClave(), liga );
-    }
-
-    /** 
-     * Busca linealmente en que hoja debe ser borrado
-     * @param clave Clave bajo la cual se debe encontrar el registro.
-     */
-    @Override
-    public void borrar(String clave) throws IOException
-    {
-        final int claveBusq = Integer.parseInt( clave.replaceAll( "\\D+","" ) );
-        int posicion = 0;
-        int claveInd = Integer.parseInt( claves[posicion].replaceAll( "\\D+","" ) );
-
-        if( claveBusq < claveInd )
-            nodos[posicion].borrar(clave);
-
-        final int tamaño = claves.length;
-        boolean mayor = true;
-        posicion = -1;
-        while( mayor && ++posicion < tamaño ) {
-            claveInd = Integer.parseInt( claves[posicion].replaceAll( "\\D+","" ) );
-            mayor = claveBusq < claveInd;
-        }
-
-        nodos[posicion].borrar(clave);
-    }
-
-    /**
-     * Busca linealmente en que hoja debe ser modificada la liga
-     * @param posicion_indice Posicion global del RedIndice dentro del archivo.
-     */
-    @Override
-    public void borrar(int posicion_indice) throws IOException {
-
-        RegIndice indice = new RegIndice();
-
-        //Se posiciona el puntero enla posicion del registro y se lee
-        raf.seek( posicion_indice * indice.length() );
-        indice.read(raf);
-
-        borrar(indice.getClave());
+        nodos[buscarPosicion(clave)].modificar( clave, liga );
     }
 
     /** 
      * Mostrar todos los RegIndice adminstrados por esta hoja.
      */
     @Override
-    public void mostrar() throws IOException {
-        // TODO
+    public void mostrar(int nivel) throws IOException {
 
-        for( Nodo n : nodos )
-            n.mostrar(); 
+        String tabs = "";
+        for (int i = 0; i < nivel; i++)
+            tabs += "\t";
+
+        for (int i = 0; i < indiceMax; i++) {
+
+            if ( i > 0 )
+                System.out.println(tabs + claves[i  - 1]);
+            nodos[i].mostrar(nivel + 1);
+        }
     }
 
-    /**
-     * Cerrar el acceso de archivo para todas las hojas
-     */
-    @Override
-    public void cerrar() throws IOException {
-        for( Nodo n : nodos )
-            if( n != null)
-                n.cerrar();
+    public void borrar(Nodo nodo) {
+
+        boolean encontrado = false;
+        int i = -1;
+
+        while (!encontrado && ++i < indiceMax)
+            encontrado = nodo == nodos[i];
+
+        if (encontrado)
+            borrarEn(i);
+        else if ( padre != null )
+            padre.borrar(nodo);
+        else
+            System.err.println("Intento de borrar noda en el arbol fracaso.");
+
+        if( indiceMax <= (N - 1) / 2 )
+            unir();
     }
 
-    @Override
-    public Nodo getPadre() {
-        return padre;
+    public void cambiarClave(String vieja, String nueva) {
+
+        final int claveBusq = Integer.parseInt( vieja.replaceAll( "\\D+","" ) );
+        int posicion = -1;
+
+        final int tamaño = tamaño() - 1;
+        boolean mayor = true;
+        boolean igual = false;
+        while( mayor && !igual && ++posicion < tamaño ) {
+
+            int claveInd = Integer.parseInt( claves[posicion].replaceAll( "\\D+","" ) );
+            mayor = claveBusq > claveInd;
+            if( claveInd == claveBusq ) {
+
+                claves[posicion] = nueva;
+                igual = true;
+            }
+        }
+
+        if( !igual && !mayor && padre != null )
+            padre.cambiarClave(vieja, nueva);
+        else if ( padre == null )
+            System.err.println("Intento de cambiar clave de busqueda en el arbol fracaso.");
     }
 
-    @Override
-    public void setPadre(Raiz raiz) {
-        padre = raiz;
+    public void insertar( Nodo nodo, String clave ) {
+
+        final int claveBusq = Integer.parseInt( clave.replaceAll( "\\D+","" ) );
+        int i = 0;
+
+        if ( (indiceMax - 1) > i ) {
+
+            System.out.println( (indiceMax - 1) + " > " + i  );
+
+            boolean mayor = true;
+            int claveInd = Integer.parseInt(claves[i].replaceAll("\\D+", ""));
+
+            if( claveBusq >= claveInd ) {
+
+                final int tamaño = indiceMax - 1;
+                System.out.println("Claves disponibles: " + tamaño);
+
+                i--;
+
+                while( mayor && ++i < tamaño ) {
+
+                    claveInd = Integer.parseInt(
+                            claves[i].replaceAll("\\D+", ""));
+                    mayor =  claveBusq > claveInd;
+                    System.out.println( "\tclaveBusq " + claveBusq +
+                            ( mayor ? " >" : " <=") +  " claveInd " + claveInd );
+                }
+
+                claveInd = Integer.parseInt(
+                        claves[i - 1].replaceAll("\\D+", ""));
+
+                if( claveInd == claveBusq )
+                    return;
+                else if( claveBusq > claveInd )
+                    i++;
+            }
+        } else if( indiceMax > i )
+            i++;
+
+        System.out.println( "\tInsertando nodo con clave " + clave + " en " + i );
+
+        insertarEn( nodo, clave, i );
+        indiceMax++;
+        if( indiceMax > N )
+            dividir();
+    }
+
+    private void borrarEn(int posicion) {
+
+        final int max = indiceMax - 2;
+
+        int i;
+        for( i = posicion; i <= max; i++ )
+            nodos[i] = nodos[i + 1];
+
+        nodos[i] = null;
+
+        for( i = posicion; i < max; i++ )
+            claves[i] = claves[i + 1];
+
+        claves[i] = null;
+        indiceMax--;
+    }
+
+    private int buscarPosicion(String clave) {
+
+        final int claveBusq = Integer.parseInt( clave.replaceAll( "\\D+","" ) );
+        int posicion = 0;
+        int claveInd = Integer.parseInt( claves[posicion].replaceAll( "\\D+","" ) );
+
+        if( claveBusq < claveInd ) {
+
+            System.out.println("Insertando en primera posicion clave " + clave);
+            return posicion;
+        }
+
+        final int tamaño = indiceMax - 1;
+        System.out.println("Claves disponibles: " + tamaño);
+        boolean mayor = true;
+        posicion = -1;
+        while( mayor && ++posicion < tamaño ) {
+
+            claveInd = Integer.parseInt( claves[posicion].replaceAll( "\\D+","" ) );
+            mayor = claveBusq > claveInd;
+            System.out.println( "\tclaveBusq " + claveBusq + ( mayor ? " >" : " <=") +  " claveInd " + claveInd );
+        }
+
+        System.out.println("Insertando en posicion " + posicion + " clave " + clave);
+
+        return posicion;
     }
 
     private void dividir() {
 
+        System.out.println("Dividiendo raiz");
+
         boolean sinPadre = padre == null;
         if(sinPadre) {
-            padre = new Raiz(arbol, null, raf);
+
+            System.out.println("Creando nueva raiz");
+            padre = new Raiz();
             arbol.setRaiz(padre);
         }
 
         final int mitad = indiceMax / 2;
+        System.out.println("Moviendo nodos de " + mitad + " hasta " + N);
+
         final String clave = claves[N / 2 - 1];
-        Raiz raiz = new Raiz(arbol, padre, raf);
+        Raiz raiz = new Raiz();
+        raiz.setPadre(padre);
 
         this.setDer(raiz);
         raiz.setIzq(raiz);
@@ -228,9 +271,12 @@ public class Raiz implements Constants, Nodo {
         for( int i = mitad; i <= N; i++) {
 
             raiz.insertar(nodos[i], claves[i - 1]);
+            nodos[i].setPadre(raiz);
             nodos[i] = null;
             claves[i - 1] = null;
         }
+
+        System.out.println("Añandiendo raiz al padre");
 
         indiceMax = mitad;
         if(sinPadre)
@@ -244,30 +290,65 @@ public class Raiz implements Constants, Nodo {
 
         for(; tamaño >= posicion; tamaño-- ) {
 
+            System.out.println( "\tMoviendo " + nodos[tamaño] +" a " + ( tamaño + 1));
             nodos[tamaño + 1] = nodos[tamaño];
-            if(tamaño > 1)
+            if(tamaño > 1) {
+                System.out.println( "\tMoviendo " + claves[tamaño - 1] +" a " + tamaño);
                 claves[tamaño] = claves[tamaño - 1];
+            }
         }
 
         nodos[posicion] = nodo;
-        posicion = posicion - (posicion > 0 ? -1 : 0);
-        if( indiceMax > 0 )
+        posicion--;
+        if( indiceMax > 0 ) {
+
+            System.out.println( "\tInsertando clave " + clave + " en " + posicion  );
             claves[posicion] = clave;
+        }
     }
 
-    private void borrarEn(int posicion) {
+    private String moverClave(int posicion) {
 
-        int i;
-        for( i = posicion; i < indiceMax - 1; i++ )
-            nodos[i] = nodos[i + 1];
+        if(posicion == 0) {
 
-        nodos[i] = null;
+            final String clave = claves[posicion];
+            borrarEn(posicion);
+            return clave;
+        } else if( posicion > 0 && posicion < indiceMax ) {
 
-        for( i = posicion; i < indiceMax - 2; i++ )
-            claves[i] = claves[i + 1];
+            final String clave = claves[--posicion];
+            claves[posicion] = null;
+            indiceMax--;
+            return clave;
+        }
 
-        claves[i] = null;
-        indiceMax--;
+        return null;
+    }
+
+    private Nodo moverNodo(int posicion) {
+
+        if( posicion == 0 )
+            return nodos[posicion];
+        else if( posicion > 0 && posicion < indiceMax ) {
+
+            final Nodo nodo = nodos[posicion];
+            nodos[posicion] = null;
+            return nodo;
+        }
+
+        return null;
+    }
+
+    private void setDer(Raiz raiz) {
+        der = raiz;
+    }
+
+    private void setIzq(Raiz raiz) {
+        izq = raiz;
+    }
+
+    private int tamaño() {
+        return indiceMax;
     }
 
     private void unir() {
@@ -299,131 +380,5 @@ public class Raiz implements Constants, Nodo {
                 System.err.println("La hoja no tiene parientes con quien unirse");
         }
     }
-
-    public void borrar(Nodo nodo) {
-
-        boolean encontrado = false;
-        int i = -1;
-
-        while (!encontrado && ++i < indiceMax)
-            encontrado = nodo == nodos[i];
-
-        if (encontrado)
-            borrarEn(i);
-        else if ( padre != null )
-            padre.borrar(nodo);
-        else
-            System.err.println("Intento de borrar noda en el arbol fracaso.");
-
-        if( indiceMax <= (N - 1) / 2 )
-            unir();
-    }
-
-    public void cambiarClave(String vieja, String nueva) {
-        final int claveBusq = Integer.parseInt( vieja.replaceAll( "\\D+","" ) );
-        int posicion = -1;
-
-        final int tamaño = claves.length;
-        boolean mayor = true;
-        boolean igual = false;
-        while( mayor && !igual && ++posicion < tamaño ) {
-
-            int claveInd = Integer.parseInt( claves[posicion].replaceAll( "\\D+","" ) );
-            mayor = claveBusq < claveInd;
-            if( claveInd == claveBusq ) {
-                claves[posicion] = nueva;
-                igual = true;
-            }
-        }
-
-        if( !igual && !mayor && padre != null )
-            padre.cambiarClave(vieja, nueva);
-        else if ( padre == null )
-            System.err.println("Intento de cambiar clave de busqueda en el arbol fracaso.");
-    }
-
-    public void insertar(Nodo nodo, String clave) {
-
-        final int claveBusq = Integer.parseInt( clave.replaceAll( "\\D+","" ) );
-        int i = 0;
-
-        if ( indiceMax > i && claves.length > 0 ) {
-
-            System.out.println( indiceMax  + " > " + i);
-
-            boolean mayor = true;
-            int claveInd = Integer.parseInt(claves[i].replaceAll("\\D+", ""));
-
-            if (claveInd < claveBusq) {
-                System.out.println("claveInd " + claveInd + " < claveBusq " + claveBusq);
-
-                while (mayor && ++i < indiceMax) {
-
-                    claveInd = Integer.parseInt(
-                            claves[i - 1].replaceAll("\\D+", ""));
-                    mayor = claveInd < claveBusq;
-                }
-
-                if (claves[i].equals(clave))
-                    return;
-            }
-        } else if ( indiceMax > i ) {
-
-            claves[i] = clave;
-            i++;
-        }
-
-        System.out.println("Insertando nodo con clave " + clave + " en " + i);
-
-        insertarEn( nodo, clave, i );
-        indiceMax++;
-        if( indiceMax > N )
-            dividir();
-    }
-
-    public String moverClave(int posicion ) {
-
-        if(posicion == 0) {
-
-            final String clave = claves[posicion];
-            borrarEn(posicion);
-            return clave;
-        } else if( posicion > 0 && posicion < indiceMax ) {
-
-            final String clave = claves[--posicion];
-            claves[posicion] = null;
-            indiceMax--;
-            return clave;
-        }
-
-        return null;
-    }
-
-    public Nodo moverNodo(int posicion) {
-
-        if( posicion == 0 )
-            return nodos[posicion];
-        else if( posicion > 0 && posicion < indiceMax ) {
-
-            final Nodo nodo = nodos[posicion];
-            nodos[posicion] = null;
-            return nodo;
-        }
-
-        return null;
-    }
-
-    public void setDer(Raiz raiz) {
-        der = raiz;
-    }
-
-    public void setIzq(Raiz raiz) {
-        izq = raiz;
-    }
-
-    public int tamaño() {
-        return indiceMax;
-    }
-
 }
 

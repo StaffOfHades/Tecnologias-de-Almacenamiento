@@ -11,7 +11,7 @@ public class Archivo implements Constants {
 
 	private boolean agrupa = true;
 
-    public Archivo( RandomAccessFile archivo, RandomAccessFile indice ) {
+    public Archivo( RandomAccessFile archivo, RandomAccessFile indice ) throws IOException {
 
 		raf = archivo;
 		arbol = new Arbol(indice);
@@ -242,6 +242,10 @@ public class Archivo implements Constants {
             raf.seek( i * registro.length() );
             registro.write(raf);
         }
+    }
+
+    public void mostrarArbol() throws IOException {
+        arbol.mostrarArbol();
     }
 
 }

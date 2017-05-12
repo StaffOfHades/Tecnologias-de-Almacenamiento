@@ -10,13 +10,20 @@ public class Hoja implements Constants, Nodo {
     private Raiz padre;
     private RegIndice[] indices = new RegIndice[N + 1];
     private int indiceMax = 0; // (N - 1) / 2 =< indiceMax =< N
-    private RandomAccessFile raf;
+    private static RandomAccessFile raf;
     private static Arbol arbol;
 
-    public Hoja( Arbol arbol, Raiz padre, RandomAccessFile raf ) {
-        this.arbol = arbol;
-        this.padre = padre;
-        this.raf = raf;
+    public static void setArbol(Arbol arbol) {
+        Hoja.arbol = arbol;
+    }
+
+    public static void setRaf(RandomAccessFile raf) {
+        Hoja.raf = raf;
+    }
+
+    @Override
+    public void setPadre(Raiz raiz) {
+        padre = raiz;
     }
 
     /**
@@ -30,19 +37,16 @@ public class Hoja implements Constants, Nodo {
 
         boolean parar = false;
         int i = -1;
-        while( !parar && ++i < indiceMax )
-            parar = indices[i].getClave().equals(clave);
-        return parar ? indices[i] : null;
-    }
+        while( !parar && ++i < indiceMax ) {
 
-    /**
-     *  Si la posicion existe, regresa el registro.
-     * @param posicion Posicion global del RedIndice dentro del archivo.
-     * @return El RegIndice si existe.
-     */
-    @Override
-    public RegIndice buscar(int posicion) throws IOException {
-        return ( indiceMax > 0 && posicion >= 0 && posicion <= indiceMax ) ? indices[posicion] : null;
+            parar = indices[i].getClave().equals(clave);
+            System.out.println( "\t" + indices[i].getClave() + (parar ? " == " : " != ") + clave);
+        }
+
+        if ( parar )
+            System.out.println( "Indice encontrado en " + i);
+
+        return parar ? indices[i] : null;
     }
 
     /**
@@ -86,6 +90,32 @@ public class Hoja implements Constants, Nodo {
         return posicion;
     }
 
+    @Override
+    public void insertar(RegIndice indice) {
+        if( indice == null )
+            return;
+
+        final int claveBusq = Integer.parseInt( indice.getClave().replaceAll( "\\D+","" ) );
+        int i = -1;
+        boolean mayor = true;
+        while( mayor && ++i < indiceMax ) {
+
+            int claveInd = Integer.parseInt(
+                    indices[i].getClave().replaceAll( "\\D+","" ) );
+            mayor = claveInd < claveBusq;
+            //System.out.println("claveInd " + claveInd + (mayor ? " <" : " >=" ) + " claveBusq " + claveBusq);
+        }
+
+        if( i < indiceMax && indices[i].getClave().equals(indice.getClave()) )
+            return;
+
+        System.out.println("\tInsertando " + indice.getClave() + " en posicion " + i);
+        insertarEn(indice, i);
+        indiceMax++;
+        if( indiceMax > N )
+            dividir();
+    }
+
     /**
      * Busca linealmente dentro de los limites si existe un registro bajo
      * la clave indicada, y lo modifica si si.
@@ -101,23 +131,22 @@ public class Hoja implements Constants, Nodo {
             parar = indices[i].getClave().equals(clave);
 
         if(parar)
-           modificar( i + offset(izq), liga );
+           modificarEn( i + offset(izq), liga );
         else
             System.err.println( "Clave " + clave + " no encontrada" );
     }
 
     /**
      * Si la posicion existe, modifica la liga.
-     * @param posicion Posicion global del RedIndice dentro del archivo.
+     * @param posicionGlobal Posicion global del RedIndice dentro del archivo.
      * @param liga Direccion a donde apunta la nueva liga.
      */
-    @Override
-    public void modificar( int posicion, int liga ) throws IOException {
+    private void modificarEn(int posicionGlobal, int liga) throws IOException {
 
         RegIndice indice = new RegIndice();
 
         //Se posiciona el puntero enla posicion del registro y se lee
-        raf.seek( posicion * indice.length() );
+        raf.seek( posicionGlobal * indice.length() );
         indice.read(raf);
 
         final String clave = indice.getClave();
@@ -128,7 +157,7 @@ public class Hoja implements Constants, Nodo {
 
         indice.setLiga( liga );
 
-        raf.seek( posicion * indice.length() );
+        raf.seek( posicionGlobal * indice.length() );
         indice.write(raf);
 
         indices[i] = indice;
@@ -146,51 +175,43 @@ public class Hoja implements Constants, Nodo {
         while( !parar && ++i < indiceMax )
             parar = indices[i].getClave().equals(clave);
 
-        if(parar)
-            borrar( i + offset(izq) );
-        else
+        if(parar) {
+            borrarEn( i + offset(izq) );
+
+            if( padre == null ) // Si es raiz
+                return;
+
+            if( (N - 1) / 2 > indiceMax )
+                unir();
+        } else
             System.err.println( "Clave " + clave + " no encontrada" );
-    }
-
-    /**
-     * Borrar el RegIndice en la posicion especificada
-     * @param posicion Posicion global del RedIndice dentro del archivo.
-     */
-    @Override
-    public void borrar(int posicion) throws IOException {
-        borrarEn(posicion);
-
-        if( padre == null ) // Si es raiz
-            return;
-
-        if( (N - 1) / 2 > indiceMax )
-            unir();
     }
 
     /**
      * Mostrar todos los RegIndice adminstrados por esta hoja.
      */
     @Override
-    public void mostrar() throws IOException {
-        // TODO
-    }
+    public void mostrar(int nivel) throws IOException {
 
-    /**
-     * Cerrar el acceso de archivo para esta hoja.
-     */
-    @Override
-    public void cerrar() throws IOException {
-        raf.close();
-    }
+        String tabs = "";
+        for (int i = 0; i < nivel; i++)
+            tabs += "\t";
+        for (int i = 0; i < indiceMax; i++) {
+            System.out.println( tabs + indices[i].getClave() );
+        }
 
-    @Override
-    public Nodo getPadre() {
-        return padre;
     }
 
     @Override
-    public void setPadre(Raiz raiz) {
-        padre = raiz;
+    public void borrar() throws IOException {
+        final int max = tamaño();
+
+        for( int i = 0; i < max; i++ )
+            indices[i] = null;
+
+        padre = null;
+        izq = null;
+        der = null;
     }
 
     /**
@@ -264,19 +285,21 @@ public class Hoja implements Constants, Nodo {
 
     private void dividir() {
 
-        System.out.println("Dividiendo");
+        System.out.println("Dividiendo hoja");
 
         boolean sinPadre = padre == null;
         if(sinPadre) {
+
             System.out.println("Creando nueva raiz");
-            padre = new Raiz(arbol, null, raf);
+            padre = new Raiz();
             arbol.setRaiz(padre);
         }
 
         final int mitad = indiceMax / 2;
-        System.out.println("Moviendo de " + mitad + " hasta " + N);
+        System.out.println("Moviendo indeces de " + mitad + " hasta " + N);
 
-        Hoja hoja = new Hoja(arbol, padre, raf);
+        Hoja hoja = new Hoja();
+        hoja.setPadre(padre);
         hoja.setIzq(this);
         this.setDer(hoja);
         for( int i = mitad; i <= N; i++ ) {
@@ -285,6 +308,7 @@ public class Hoja implements Constants, Nodo {
             indices[i] = null;
         }
         indiceMax = mitad;
+        System.out.println("Añaniendo hoja al padre");
         if(sinPadre)
             padre.insertar(this, this.getClave());
         padre.insertar(hoja, hoja.getClave() );
@@ -322,31 +346,6 @@ public class Hoja implements Constants, Nodo {
 
     private String getClave() {
         return indices[0].getClave();
-    }
-
-    private void insertar(RegIndice indice) {
-        if( indice == null )
-            return;
-
-        final int claveBusq = Integer.parseInt( indice.getClave().replaceAll( "\\D+","" ) );
-        int i = -1;
-        boolean mayor = true;
-        while( mayor && ++i < indiceMax ) {
-
-            int claveInd = Integer.parseInt(
-                    indices[i].getClave().replaceAll( "\\D+","" ) );
-            mayor = claveInd < claveBusq;
-            //System.out.println("claveInd " + claveInd + (mayor ? " <" : " >=" ) + " claveBusq " + claveBusq);
-        }
-
-        if( i < indiceMax && indices[i].getClave().equals(indice.getClave()) )
-            return;
-
-        System.out.println("Insertando " + indice.getClave() + " en posicion" + i);
-        insertarEn(indice, i);
-        indiceMax++;
-        if( indiceMax > N )
-            dividir();
     }
 
     private RegIndice mover(int posicion) {
