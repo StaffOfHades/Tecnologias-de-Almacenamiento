@@ -27,7 +27,7 @@ public class Registro implements Constants {
  
 		if( nomSucursal.length() > STR_SIZE || nomCliente.length() > STR_SIZE ) {
             
-			System.err.println( "ATENCION: Sucursal o nombre con mas de " + STR_SIZE + " caracteres" );
+			System.out.println( "ATENCION: Sucursal o nombre con mas de " + STR_SIZE + " caracteres" );
         }
         
 		for( int i = 0; i < STR_SIZE && i < nomSucursal.getBytes().length; i++ )
@@ -64,17 +64,16 @@ public class Registro implements Constants {
 	}
 	
 	public void setSucursal (String suc) {
-
-		if( suc.length() > sucursal.length ) {
-			System.err.println( "ATENCION: Sucursal con mas de " + STR_SIZE + " caracteres" );
-        }
-
+		
 		sucursal = new byte [sucursal.length];
+		
+		if( suc.length() > sucursal.length ) {
+			System.out.println( "ATENCION: Sucursal con mas de " + STR_SIZE + " caracteres" );
+        }
         
 		for( int i = 0; i < sucursal.length && i < suc.getBytes().length; i++ )
 			sucursal[i] = suc.getBytes()[i];
 	}
-
     /*-----------------------------------------------------------------
     / longitud en bytes de un registro
     /-----------------------------------------------------------------*/
@@ -93,8 +92,7 @@ public class Registro implements Constants {
     /-----------------------------------------------------------------*/
     
 	public void read( RandomAccessFile raf ) throws IOException {
-
-        borrado = raf.readBoolean();
+        borrado= raf.readBoolean();
 		raf.read( sucursal );
 		numero = raf.readInt();
 		raf.read( nombre );
@@ -102,8 +100,7 @@ public class Registro implements Constants {
 	}
     
 	public void write( RandomAccessFile raf ) throws IOException {
-
-        raf.writeBoolean( borrado );
+        raf.writeBoolean (borrado);
 		raf.write( sucursal );
 		raf.writeInt( numero );
 		raf.write( nombre );

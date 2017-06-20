@@ -8,23 +8,23 @@ import java.io.*;
 
 public class RegIndice implements Constants {
     
-	private byte[] clave = new byte[STR_SIZE];
+	private byte[] clave;
 	private int liga;
+    private int ocupacion = 0;
+    
+    /*-----------------------------------------------------------------
+    / constructor
+    /-----------------------------------------------------------------*/
+    
+	public RegIndice( int longitud ) { clave = new byte[ longitud ]; }
     
     /*-----------------------------------------------------------------
     / mŽtodos getters/setters
     /-----------------------------------------------------------------*/
     
-	public String getClave() {
-
-        return new String( clave ).replace("\0","");
-	}
+	public String getClave() { return new String( clave ).replace("\0",""); }
     
 	public void setClave( String valor ) {
-
-        if( valor.length() > clave.length ) {
-            System.err.println( "ATENCION: Clave con mas de " + STR_SIZE + " caracteres" );
-        }
         
 		byte[] v = valor.getBytes();
         
@@ -32,25 +32,41 @@ public class RegIndice implements Constants {
             clave[i] = v[i];
 	}
     
-    public int getLiga() {
+    public int getLiga() { return liga; }
+    
+	public void setLiga( int posicion ) { liga = posicion; }
 
-		return liga;
+    public int getOcupacion() { return ocupacion; }
+
+    public boolean tieneEspacio() { return (ocupacion + 1) < MAX_CAPACITY; }
+
+    public boolean agregar() {
+        if ( tieneEspacio() ) {
+            ocupacion++;
+            return true;
+        }
+        return false;
     }
     
-	public void setLiga( int posicion ) {
-
-		liga = posicion;
-	}
-
     /*-----------------------------------------------------------------
-    / longitud en bytes
+    / longitud en bytes y comparaci—n del valor de la clave
     /-----------------------------------------------------------------*/
     
 	public int length() {
-
-		return clave.length + Integer.SIZE / 8;
-	}
+        return clave.length + Integer.SIZE / 8 + Integer.SIZE / 8;
+    }
+    
+	/*public int compararCon( String valor ) {
         
+		byte[] k = valor.getBytes();
+		byte[] v = new byte[ clave.length ];
+        
+		for( int i = 0; i < clave.length && i < k.length; i++ )
+             v[i] = k[i];
+        
+		return getClave().compareTo( new String(v) );
+	}*/
+    
     /*-----------------------------------------------------------------
     / mŽtodos para escribir y leer una entrada en el ’ndice
     /-----------------------------------------------------------------*/
@@ -59,11 +75,13 @@ public class RegIndice implements Constants {
         
 		raf.read( clave );
 		liga = raf.readInt();
+        ocupacion = raf.readInt();
 	}
     
 	public void write( RandomAccessFile raf ) throws IOException {
         
 		raf.write( clave );
 		raf.writeInt( liga );
+        raf.writeInt( ocupacion );
 	}
 }

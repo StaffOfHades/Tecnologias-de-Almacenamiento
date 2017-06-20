@@ -6,9 +6,8 @@ if  [ ! -z "$1" ]; then if [ "$1" = "-c" ]; then
         exit 1
     fi; fi
 elif [ ! -z "$1" ]; then
-    echo "Unexpected argument recieved ; did you mean -c (compile)?"
+    echo "Unexpected argument recieved ; did you mean -c (compile)?" >&2
+    exit 2
 fi
-rm ArchivoDisperso.Datos  Indice.Disperso
-cp "ArchivoDisperso.Datos copy" "ArchivoDisperso.Datos"
-cp "Indice.Disperso copy" "Indice.Disperso"
+rm Archivo.Datos Indice.Disperso 2> /dev/null
 java -cp bin Prueba 
